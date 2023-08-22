@@ -6,7 +6,8 @@
 // #include <unistd.h>
 
 /**
- * @brief ...
+ * @brief recursive function for salute
+ * @param data the number to use in the func.
  */
 void* greet(void* data);
 
