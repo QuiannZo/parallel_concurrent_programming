@@ -12,13 +12,14 @@ void* greet(void* data);
 
 // procedure main:
 int main(void) {
+  // size_t var. init to 2.
+  size_t num = 2;
   // create_thread(greet)
   pthread_t thread;
-  int error = pthread_create(&thread, /*attr*/ NULL, greet, /*arg*/ NULL);
+  int error = pthread_create(&thread, /*attr*/ NULL, greet, /*arg*/ num);
   if (error == EXIT_SUCCESS) {
     // print "Hello from main thread"
     // usleep(1);  // indeterminism
-    printf("Hello from main thread\n");
     pthread_join(thread, /*value_ptr*/ NULL);
   } else {
     fprintf(stderr, "Error: could not create secondary thread\n");
@@ -28,8 +29,21 @@ int main(void) {
 
 // procedure greet:
 void* greet(void* data) {
-  (void)data;
+  // cast data.
+  (size_t)data;
   // print "Hello from secondary thread"
-  printf("Hello from secondary thread\n");
+  if(data == 0){
+    printf("Good bye. %d\n", data);
+  } else if (data > 0){
+    printf("Hello. %d\n", data);
+    pthread_t thread;
+    int error = pthread_create(&thread, /*attr*/ NULL, greet, /*arg*/ --data);
+    if (error == EXIT_SUCCESS) {
+        pthread_join(thread, /*value_ptr*/ NULL);
+        } else {
+        fprintf(stderr, "Error: could not create secondary thread\n");
+    }
+    return error;
+  }
   return NULL;
 }  // end procedure
