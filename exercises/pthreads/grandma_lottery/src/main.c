@@ -11,10 +11,8 @@
 
 // func to generate two threads with random num generators.
 void* generate(void* data);
-// func to generate nums.
+// func to generate the numbers.
 void* gennum(void* data);
-
-srand(time(NULL)); // initialization. called once.
 
 // main func.
 int main(void) {
@@ -30,19 +28,41 @@ int main(void) {
   return error;
 }
 
-void* gennum(void* data){
+void* gennum_dir(void* data){
+  srand(time(NULL)); // init.
   // generate a random num from 0 to 99.
-  int r = rand(0, 100);
+  int r = rand() % 100;
+  return &r;
+}
+
+void* gennum_fdir(void* data){
+  srand(time(NULL)); // init.
+  // generate a random num from 0 to 99.
+  int r = rand() % 100;
+  return &r;
 }
 
 void* generate(void* data){
   // create_thread one(gennum)
   pthread_t thread_one;
-  int error = pthread_create(&thread_one, /*attr*/ NULL, gennum, /*arg*/ NULL);
-  if (error == EXIT_SUCCESS) {
+  void* num_one;
+  int error_one = pthread_create(&thread_one, /*attr*/ NULL, gennum_dir, /*arg*/ NULL);
+  if (error_one == EXIT_SUCCESS) {
     pthread_join(thread_one, /*value_ptr*/ NULL);
+    return 0;
   } else {
     fprintf(stderr, "Error: could not create secondary thread\n");
   }
-  return error;
+
+  // create_thread two(gennum)
+  pthread_t thread_two;
+  int error_two = pthread_create(&thread_two, /*attr*/ NULL, gennum_fdir, /*arg*/ NULL);
+  if (error_two == EXIT_SUCCESS) {
+    pthread_join(thread_two, /*value_ptr*/ NULL);
+    return 0;
+  } else {
+    fprintf(stderr, "Error: could not create secondary thread\n");
+  }
+
+  return 1;
 }
