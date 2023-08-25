@@ -29,18 +29,18 @@ int main(void) {
 }
 
 void* gennum_dir(void* data){
-  (int)data;
-  srand(time(NULL)); // init.
-  // generate a random num from 0 to 99.
-  data = rand() % 100;
-  return data;
-}
-
-void* gennum_fdir(void* data){
   srand(time(NULL) + 1); // init.
   // generate a random num from 0 to 99.
   int r = rand() % 100;
   data = &r;
+  return data;
+}
+
+void* gennum_fdir(void* data){
+  (int)data;
+  srand(time(NULL)); // init.
+  // generate a random num from 0 to 99.
+  data = rand() % 100;
   return data;
 }
 
@@ -52,7 +52,7 @@ void* generate(void* data){
   int error_one = pthread_create(&thread_one, NULL, gennum_dir, &num_one);
   if (error_one == EXIT_SUCCESS) {
     pthread_join(thread_one, &num_one);
-    printf("%d\n", (int)num_one);
+    printf("%p\n", num_one); // returns memo dir of the var.
   } else {
     fprintf(stderr, "Error: could not create secondary thread\n");
     return 1;
@@ -64,7 +64,7 @@ void* generate(void* data){
   int error_two = pthread_create(&thread_two, /*attr*/ NULL, gennum_fdir, /*arg*/ &num_two);
   if (error_two == EXIT_SUCCESS) {
     pthread_join(thread_two, &num_two);
-    printf("%d\n", (int)num_two);
+    printf("%d\n", (int)num_two); // returns false memo dir.
   } else {
     fprintf(stderr, "Error: could not create secondary thread\n");
     return 1;
