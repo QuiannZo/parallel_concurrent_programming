@@ -37,10 +37,10 @@ void* gennum_dir(void* data){
 }
 
 void* gennum_fdir(void* data){
-  (int)data;
-  srand(time(NULL)); // init.
+  srand(time(NULL) + 1); // init.
   // generate a random num from 0 to 99.
-  data = rand() % 100;
+  int r = rand() % 100;
+  data = &r;
   return data;
 }
 
