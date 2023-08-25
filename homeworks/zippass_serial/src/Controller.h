@@ -1,8 +1,5 @@
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+#pragma once
 
-void readData(FILE* args, char chars[]);
+void readData(int argc, char* argv[]);
 void findPass();
 void printData();
-
-#endif
