@@ -9,6 +9,7 @@
 int maxLen; // Maximum password length.
 char chars[100] = {0}; // chars by the input.
 char paths[20][256]; // paths of the zip files.
+//char output[20][256];
 
 void read_data(int argc, char* argv[]){
     // init paths.
@@ -54,31 +55,37 @@ void read_data(int argc, char* argv[]){
         }
     }
 
-    printf("%c\n" ,chars[40]);
-    printf("%d\n" ,maxLen);
-    printf("%s\n" ,paths[0]);
+    //printf("%d\n" ,maxLen);
+    //printf("%s\n" ,paths[0]);
 
+    /*
     int i = 0;
-    while(!(strcmp(paths[i], ""))){
+    while(i < 20 && paths[i][0] != '\0'){
+        printf("%s\n" ,paths[i]);
+        i++;
+    }*/
+}
+
+// String?
+void find_pass(char dir[256]){
+    // Cycle through the possible combinations to find the password.
+    strcat(dir, "a");
+}
+
+void find_passwords(){
+    // cycle through all the zip dirs and apply the find_pass() func.
+}
+
+void print_data(){
+    int i = 0;
+    while(i < 20 && paths[i][0] != '\0'){
         printf("%s\n" ,paths[i]);
         i++;
     }
 }
 
-// String?
-void find_pass(){
-    // Cycle through the possible combinations to find the password.
-}
-
-void find_passwords(){
-
-}
-
-void print_data(){
-
-}
-
 void run(int argc, char* argv[]){
-    readData(argc, argv);
+    read_data(argc, argv);
     // the other functions.
+    print_data();
 }
