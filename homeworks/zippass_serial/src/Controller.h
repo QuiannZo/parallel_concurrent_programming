@@ -1,9 +1,13 @@
 #pragma once
 
 extern int maxLen; // Maximum password length.
-extern char chars[100]; // chars by the input.
-extern char paths[20][256]; // paths of the zip files.
+extern char *chars; // chars by the input.
+extern char **paths; // paths of the zip files.
 
+// Initializes the memory.
+void init();
+// frees the memory used.
+void free_memo();
 // Reads data from the file given by the user.
 void read_data(int argc, char* argv[]);
 // This function tries to open the file and returns a value. If the file
