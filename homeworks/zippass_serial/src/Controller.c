@@ -57,13 +57,6 @@ void read_data(int argc, char* argv[]){
 
     //printf("%d\n" ,maxLen);
     //printf("%s\n" ,paths[0]);
-
-    /*
-    int i = 0;
-    while(i < 20 && paths[i][0] != '\0'){
-        printf("%s\n" ,paths[i]);
-        i++;
-    }*/
 }
 
 // String?
@@ -74,6 +67,11 @@ void find_pass(char dir[256]){
 
 void find_passwords(){
     // cycle through all the zip dirs and apply the find_pass() func.
+    int i = 0;
+    while(i < 20 && paths[i][0] != '\0'){
+        find_pass(paths[i]);
+        i++;
+    }
 }
 
 void print_data(){
@@ -85,7 +83,9 @@ void print_data(){
 }
 
 void run(int argc, char* argv[]){
+    // run func.
     read_data(argc, argv);
-    // the other functions.
+    // ...
+    // print the data to the output.
     print_data();
 }
