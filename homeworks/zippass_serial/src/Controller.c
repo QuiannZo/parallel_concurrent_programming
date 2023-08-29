@@ -55,7 +55,6 @@ void read_data(int argc, char* argv[]){
             FILE* argument = fopen(filename, "r");
             if (argument == NULL) {
                 printf("Error: Could not open file '%s'\n", filename);
-                return EXIT_FAILURE; // returns 1.
             }
 
             int c = 0;
@@ -81,7 +80,7 @@ void read_data(int argc, char* argv[]){
                 // Quit the '\n' at the end of the lines to avoid errors.
                 // This piece of code was gathered from chatgpt 3.5
                 int len = strlen(paths[str_counter]);
-                if (len > 0 && paths[str_counter][len - 1] == '\n' || paths[str_counter][len - 1] == '\r') {
+                if ((len > 0 && paths[str_counter][len - 1] == '\n') || paths[str_counter][len - 1] == '\r') {
                     paths[str_counter][len - 1] = '\0'; // Replace '\n' with '\0'
                 }
                 str_counter++;
@@ -96,32 +95,72 @@ void read_data(int argc, char* argv[]){
     //printf("%s\n" ,paths[0]);
 }
 
-int open_file(char* dir, char* password){
-    // Tries to open the file with the given password.
-    return 0;
+int open_file(char* dir, char* pass){
+    const char* zipFilePath = dir;
+    const char* password = pass;
+
+    // Open the zip archive using zip_open.
+    struct zip* zipArchive = zip_open(zipFilePath, ZIP_RDONLY, NULL);
+    if (zipArchive == NULL) {
+        printf("Could not open zip.\n");
+        return 1;
+    }
+
+    // Gets the number of entries in the zip. This is done to check that the zip is valid.
+    // if the function returns something below 0 the operation failed and the code stops there.
+    zip_int64_t numEntries = zip_get_num_entries(zipArchive, 0);
+    if (numEntries < 0) {
+        printf("Entries number not valid.\n");
+        zip_close(zipArchive);
+        return 1;
+    }
+
+    // File index. Ill use the first file.
+    zip_int64_t i = 0;
+    
+    // try to extract one of the files as everyone has the same password. In this case the first one.
+    struct zip_file *entry = zip_fopen_encrypted(zipArchive, i, NULL, password);
+
+    // Check if the password was correct. 0 for correct and 1 for error.
+    if (entry != NULL) {
+        zip_fclose(entry);
+        zip_close(zipArchive);
+        return 0;
+    } else {
+        zip_fclose(entry);
+        zip_close(zipArchive);
+        return 1;
+    }
 }
 
-void find_pass(char* dir){
+int find_pass(char* dir){
     // Cycle through the possible combinations to find the password.
     // Create a password string.
-    char *password = (char *)malloc(maxLen * sizeof(char));
+    char* password = (char *)malloc(maxLen * sizeof(char));
     password[maxLen] = '\0';
     // Fill it with the first char given in the input and make the first test.
     for(int i = 0; i < maxLen; ++i){
         password[i] = (char)chars[0];
     }
     int of = open_file(dir, password);
+    if(of == 0){
+        strcat(dir, " ");
+        strcat(dir, password);
+        return 0;
+    }
     // Now the algorithm.
+    int verify;
 
     
     //free memory.
     free(password);
+    return 1;
 }
 
 void find_passwords(){
     // cycle through all the zip dirs and apply the find_pass() func.
     int i = 0;
-    while(i < 20 && paths[i][0] != '\0'){
+    while(i < paths_size && paths[i][0] != '\0'){
         find_pass(paths[i]);
         i++;
     }
@@ -129,7 +168,7 @@ void find_passwords(){
 
 void print_data(){
     int i = 0;
-    while(i < 20 && paths[i][0] != '\0'){
+    while(i < paths_size && paths[i][0] != '\0'){
         printf("%d: %s\n" , i, paths[i]);
         i++;
     }

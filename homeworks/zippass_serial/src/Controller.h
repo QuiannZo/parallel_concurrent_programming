@@ -9,16 +9,18 @@ extern char **paths; // paths of the zip files.
 void init();
 // If needed, the array can grow to hold more zip file dirs.
 void refactor_arr();
+// If needed the array of chars can grow.
+void refactor_chars();
 // frees the memory used.
 void free_memo();
 // Reads data from the file given by the user.
 void read_data(int argc, char* argv[]);
 // This function tries to open the file and returns a value. If the file
 // could be opened it returns 0;
-int open_file(char* dir, char* password);
+int open_file(char* dir, char* pass);
 // Function to find the password using brute force.
 // Recieves a dir of a zipfile and prints the file and password (if any is found).
-void find_pass(char* dir);
+int find_pass(char* dir);
 // Uses find_pass to find the passwords of all available zip files.
 void find_passwords();
 // Prints the output specified in the instructions.

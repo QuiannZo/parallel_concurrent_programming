@@ -11,12 +11,12 @@ FLAG=
 FLAGS=$(strip -Wall -Wextra $(FLAG) $(DEFS))
 FLAGC=$(FLAGS) $(CSTD)
 FLAGX=$(FLAGS) $(XSTD)
-LIBS=-lzip
 DIFF=icdiff --no-headers
 LINTF=-build/header_guard,-build/include_subdir,-runtime/int
 LINTC=$(LINTF),-readability/casting
 LINTX=$(LINTF),-build/c++11,-runtime/references
 ARGS=
+LIBS=-lzip
 
 # Directories
 RSC=assets
@@ -101,6 +101,7 @@ endif
 # Targets
 all: debug test lint doc
 debug: FLAG += -g
+debug: $(EXEFILE)
 debug: $(TARGETS)
 release: FLAGS += -O3 -DNDEBUG
 release: $(TARGETS)
