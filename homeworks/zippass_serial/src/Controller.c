@@ -6,7 +6,7 @@
 
 #include "Controller.h"
 
-int maxLen; // Maximum password length.
+int maxLen = 0; // Maximum password length.
 char chars[100] = {0}; // chars by the input.
 char paths[20][256]; // paths of the zip files.
 //char output[20][256];
@@ -59,10 +59,22 @@ void read_data(int argc, char* argv[]){
     //printf("%s\n" ,paths[0]);
 }
 
-// String?
+int open_file(char dir[256], char password[maxLen]){
+    // Tries to open the file with the given password.
+
+}
+
 void find_pass(char dir[256]){
     // Cycle through the possible combinations to find the password.
-    strcat(dir, "a");
+    // Create a password string.
+    char *password = (char *)malloc(maxLen * sizeof(char));
+    // Fill it with the first char given in the input.
+    for(int i = 0; i < maxLen; ++i){
+        password[i] = chars[0];
+    }
+    //password = "01234";
+    printf("Maxlen %d\n", maxLen);
+    printf("password: %c end.\n", password[0]);
 }
 
 void find_passwords(){
@@ -87,5 +99,6 @@ void run(int argc, char* argv[]){
     read_data(argc, argv);
     // ...
     // print the data to the output.
+    find_pass(paths[0]);
     print_data();
 }
