@@ -7,10 +7,15 @@
 #include "Controller.h"
 
 int maxLen; // Maximum password length.
-char chars[100]; // chars by the input.
+char chars[100] = {0}; // chars by the input.
 char paths[20][256]; // paths of the zip files.
 
-void readData(int argc, char* argv[]){
+void read_data(int argc, char* argv[]){
+    // init paths.
+    for (int i = 0; i < 20; i++) {
+        strcpy(paths[i], "");
+    }
+
     char* filename;
     if(argc > 1){
         // If the file is a text file:
@@ -49,16 +54,31 @@ void readData(int argc, char* argv[]){
         }
     }
 
-    printf("%c\n" ,chars[0]);
+    printf("%c\n" ,chars[40]);
     printf("%d\n" ,maxLen);
     printf("%s\n" ,paths[0]);
-    printf("%s\n" ,paths[1]);
+
+    int i = 0;
+    while(!(strcmp(paths[i], ""))){
+        printf("%s\n" ,paths[i]);
+        i++;
+    }
 }
 
-void findPass(){
+// String?
+void find_pass(){
+    // Cycle through the possible combinations to find the password.
+}
+
+void find_passwords(){
 
 }
 
-void printData(){
+void print_data(){
 
+}
+
+void run(int argc, char* argv[]){
+    readData(argc, argv);
+    // the other functions.
 }

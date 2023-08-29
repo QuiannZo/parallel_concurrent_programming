@@ -8,5 +8,5 @@
 
 int main(int argc, char* argv[]){
     // from controller.
-    readData(argc, argv);
+    run(argc, argv);
 }
