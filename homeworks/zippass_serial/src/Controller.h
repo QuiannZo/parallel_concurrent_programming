@@ -20,7 +20,7 @@ void read_data(int argc, char* argv[]);
 int open_file(char* dir, char* pass);
 // Function to find the password using brute force.
 // Recieves a dir of a zipfile and prints the file and password (if any is found).
-void find_password(char* chars, int max_length, char* initial_password, char* dir);
+void find_password(char* chars, int max_length, char* password, int index, char* dir);
 // Uses find_pass to find the passwords of all available zip files.
 //void find_passwords();
 // Prints the output specified in the instructions.

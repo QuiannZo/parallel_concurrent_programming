@@ -121,12 +121,10 @@ int open_file(char* dir, char* pass){
 
     // Check if the password was correct.
     if (entry != NULL) {
-        printf("Password is valid.\n");
         res = 0;
         // Remember to close the opened entry.
         zip_fclose(entry);
     } else {
-        printf("Password is invalid.\n");
         res = 1;
     }
     
@@ -136,7 +134,7 @@ int open_file(char* dir, char* pass){
     return res;
 }
 
-void find_password(char* chars, int max_length, char* initial_password, char* dir){
+void find_password_outdated(char* chars, int max_length, char* initial_password, char* dir){
     int i = 0;
     while (i < 20) {
         char* password = (char*)malloc((max_length) * sizeof(char));
@@ -161,17 +159,34 @@ void find_password(char* chars, int max_length, char* initial_password, char* di
     }
 }
 
+void find_password(char* chars, int max_length, char* password, int index, char* dir) {
+    if (index > 0 && index <= max_length) {
+        password[index] = '\0';  // Null-terminate the combination
+        int of = open_file(dir, password);
+        if(of == 0){
+            strcat(dir, " ");
+            strcat(dir, password);
+        }
+    }
 
-/*
-void find_passwords(){
+    if (index == max_length) {
+        return;
+    }
+
+    for (int i = 0; i < strlen(chars); i++) {
+        password[index] = chars[i];
+        find_password(chars, max_length, password, index + 1, dir);
+    }
+}
+
+void find_passwords(char* password){
     // cycle through all the zip dirs and apply the find_pass() func.
     int i = 0;
     while(i < paths_size && paths[i][0] != '\0'){
-        find_pass(paths[i]);
+        find_password(chars, maxLen, password, 0, paths[i]);
         i++;
     }
 }
-*/
 
 void print_data(){
     int i = 0;
@@ -186,17 +201,18 @@ void run(int argc, char* argv[]){
     init();
     // run func.
     read_data(argc, argv);
-    // test passwords
-    char* password = "84520";
-    //find_password(chars, maxLen, password, paths[1]);
-    // print the data to the output.
-    printf("%s\n", paths[1]);
-    printf("%s\n", password);
-    int i = open_file(paths[1], password);
 
-    printf("i: %d\n", i);
+    // test passwords
+    char* password = (char*)malloc((maxLen + 1) * sizeof(char)); // +1 for null-termination
+    if (password != NULL) {
+        memset(password, 0, maxLen + 1); // Initialize the password buffer with null characters
+    }
+    find_passwords(password);
+
+    // print the data to the output.
     print_data();
     
     // Free memory.
     free_memo();
+    free(password);
 }
