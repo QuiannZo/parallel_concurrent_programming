@@ -96,14 +96,14 @@ void read_data(int argc, char* argv[]){
 }
 
 int open_file(char* dir, char* pass){
-    const char* zipFilePath = dir;
+    const char* directory = dir;
     const char* password = pass;
 
     // Open the zip archive using zip_open.
-    struct zip* zipArchive = zip_open(zipFilePath, ZIP_RDONLY, NULL);
+    struct zip* zipArchive = zip_open(directory, ZIP_RDONLY, NULL);
     if (zipArchive == NULL) {
-        printf("Could not open zip.\n");
-        return 1;
+        printf("Could not open zip. NO ziparchive\n");
+        return 2;
     }
 
     // Gets the number of entries in the zip. This is done to check that the zip is valid.
@@ -112,7 +112,7 @@ int open_file(char* dir, char* pass){
     if (numEntries < 0) {
         printf("Entries number not valid.\n");
         zip_close(zipArchive);
-        return 1;
+        return 2;
     }
 
     // File index. Ill use the first file.
@@ -124,14 +124,12 @@ int open_file(char* dir, char* pass){
     // Check if the password was correct. 0 for correct and 1 for error.
     if (entry != NULL) {
         zip_fclose(entry);
-        zip_close(zipArchive);
         return 0;
     } else {
-        zip_fclose(entry);
-        zip_close(zipArchive);
         return 1;
     }
 }
+
 
 int find_pass(char* dir){
     // Cycle through the possible combinations to find the password.
@@ -150,11 +148,34 @@ int find_pass(char* dir){
     }
     // Now the algorithm.
     int verify;
-
+    int combinations;
     
     //free memory.
     free(password);
     return 1;
+}
+
+
+void find_password(char* chars, int max_length, char* password, int idx, char* dir){
+    if (idx > 0 && idx <= max_length) {
+        password[idx] = '\0';  // Null-terminate the current combination
+        printf("%s\n", password);
+        int of = open_file(dir, password);
+        if(of == 0){
+            strcat(dir, " ");
+            strcat(dir, password);
+            return;
+        }
+    }
+
+    if (idx == max_length) {
+        return;
+    }
+
+    for (int i = 0; i < strlen(chars); i++) {
+        password[idx] = chars[i];
+        find_password(chars, max_length, password, idx + 1, dir);
+    }
 }
 
 void find_passwords(){
@@ -179,7 +200,10 @@ void run(int argc, char* argv[]){
     init();
     // run func.
     read_data(argc, argv);
-    find_pass(paths[0]);
+    // test passwords
+    char* password = (char *)malloc(maxLen * sizeof(char));
+    password[maxLen] = '\0';
+    find_password(chars, maxLen, password, 0, paths[1]);
     // print the data to the output.
     print_data();
     // Free memory.
