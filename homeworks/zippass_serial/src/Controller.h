@@ -1,29 +1,70 @@
 #pragma once
 
-extern int factor;
-extern int maxLen; // Maximum password length.
-extern char *chars; // chars by the input.
-extern char **paths; // paths of the zip files.
+/**
+ * @file Controller.h
+ * @brief Header file.
+ */
 
-// Initializes the memory.
+/**
+ * @brief Initializes the memory for chars and paths.
+ */
 void init();
-// If needed, the array can grow to hold more zip file dirs.
+
+/**
+ * @brief Refactors path if the file has more than 50.
+ */
 void refactor_arr();
-// If needed the array of chars can grow.
+
+/**
+ * @brief Refactors chars if the file provides more than 100.
+ */
 void refactor_chars();
-// frees the memory used.
+
+/**
+ * @brief Frees the memory used by chars and paths.
+ */
 void free_memo();
-// Reads data from the file given by the user.
+
+/**
+ * @brief Reads data from the file provided by the user in the console. It also controlls the resizing of
+ * chars and paths.
+ * @param argc Number of arguments.
+ * @param argv Array of arguments.
+ */
 void read_data(int argc, char* argv[]);
-// This function tries to open the file and returns a value. If the file
-// could be opened it returns 0;
+
+/**
+ * @brief Opens a zip file and checks if the password is correct.
+ * @param dir The dir of the zip file.
+ * @param pass Password string.
+ * @return 0: if the content verification is successful. 1: if verification fails. 2: if an errors appears.
+ */
 int open_file(char* dir, char* pass);
-// Function to find the password using brute force.
-// Recieves a dir of a zipfile and prints the file and password (if any is found).
+
+/**
+ * @brief Function to find the password using brute force.
+ * @param chars Chars array.
+ * @param max_length The maximum length of the password.
+ * @param password The current password being tested.
+ * @param index The current index in the iteration.
+ * @param dir The path of the zip file.
+ */
 void find_password(char* chars, int max_length, char* password, int index, char* dir);
-// Uses find_pass to find the passwords of all available zip files.
-//void find_passwords();
-// Prints the output specified in the instructions.
+
+/**
+ * @brief Uses find_password function to find the passwords of all available zip file dirs.
+ * @param password The string to store the password being tested.
+ */
+void find_passwords(char* password);
+
+/**
+ * @brief Prints the data to the output.
+ */
 void print_data();
-// Function to run all other functions.
+
+/**
+ * @brief Runs all functions of the program.
+ * @param argc Number of arguments.
+ * @param argv Array of arguments.
+ */
 void run(int argc, char* argv[]);
