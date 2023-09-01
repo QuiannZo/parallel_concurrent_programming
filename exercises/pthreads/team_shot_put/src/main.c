@@ -76,9 +76,10 @@ void* get_data(void* data){
 // First athlete data generation.
 void* shot_one(void* data){
     (double)data;
+
     srand(time(NULL)); // init.
-    // generate a random num from 0 to 99.
-    data = rand(25.0);
+    // generate a random num from 0 to 25.0
+    data = (rand() % 250) / 10;
 
     return data;
 }
@@ -86,9 +87,10 @@ void* shot_one(void* data){
 // Second athlete data generation.
 void* shot_two(void* data){
     (double)data;
+
     srand(time(NULL)); // init.
-    // generate a random num from 0 to 99.
-    data = rand(25.0);
+    // generate a random num from 0 to 25.0
+    data = (rand() % 250) / 10;
 
     return data;
 }
