@@ -17,8 +17,13 @@ typedef struct ThreadData {
     int max_length;
     char* password;
     char* dir;
+    // thread range.
     int start_index;
     int end_index;
+    // Sync tools.
+    pthread_mutex_t* mutex;
+    pthread_cond_t* cond;
+    int* threads_ready;
 } ThreadData;
 
 int factor = 10;
@@ -236,16 +241,37 @@ void execute_p(){
         }
     }
 
+    // Create sync tools to ensure threads dont collide or check multiple dirs at once.
+    pthread_mutex_t mutex;
+    pthread_cond_t cond;
+    int threads_ready = 0;
+
+    // Initialize mutex and condition variable
+    pthread_mutex_init(&mutex, NULL);
+    pthread_cond_init(&cond, NULL);
+
     // cycle through all the zip dirs and apply the find_pass() func.
     int idx = 0;
     while(idx < paths_size && paths[idx][0] != '\0'){
+        threads_ready = 0;
         // Create and start threads.
         for (int i = 0; i < threads_number; i++) {
             thread_data[i].dir = paths[idx]; // asign the current dir to each thread.
+            thread_data[i].mutex = &mutex;
+            thread_data[i].cond = &cond;
+            thread_data[i].threads_ready = &threads_ready;
+
             pthread_create(&threads[i], NULL, thread_find_password, &thread_data[i]);
         }
 
-        // Wait for threads to finish.
+        // Wait for all the threads to be ready.
+        pthread_mutex_lock(&mutex);
+        while (threads_ready < threads_number) {
+            pthread_cond_wait(&cond, &mutex);
+        }
+        pthread_mutex_unlock(&mutex);
+
+        // Join for the threads.
         for (int i = 0; i < threads_number; i++) {
             pthread_join(threads[i], NULL);
         }
@@ -254,13 +280,22 @@ void execute_p(){
 
     // free memo.
     free(password);
+    pthread_mutex_destroy(&mutex);
+    pthread_cond_destroy(&cond);
 }
 
 // passes data, a struct with the thread data, and the function executes find_password for the thread.
 void* thread_find_password(void* data) {
     struct ThreadData* tdata = (struct ThreadData*)data;
     find_password(tdata->chars, tdata->max_length, tdata->password, tdata->start_index, tdata->end_index, tdata->dir);
-    return;
+    
+    // set the thread to 'ready'.
+    pthread_mutex_lock(tdata->mutex);
+    (*tdata->threads_ready)++;
+    pthread_cond_signal(tdata->cond);
+    pthread_mutex_unlock(tdata->mutex);
+
+    pthread_exit(NULL);
 }
 
 void run(int argc, char* argv[]){
