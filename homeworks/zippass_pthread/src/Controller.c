@@ -5,6 +5,10 @@
 #include <zip.h>
 #include <pthread.h>
 
+#include <inttypes.h>
+#include <stdint.h>
+#include <unistd.h>
+
 #include "Controller.h"
 
 int factor = 10;
@@ -144,23 +148,24 @@ int open_file(char* dir, char* pass){
     return res;
 }
 
-void find_password(char* chars, int max_length, char* password, int index, char* dir) {
-    if (index > 0 && index <= max_length) {
-        password[index] = '\0';  // Null-terminate the combination
+void find_password(char* chars, int max_length, char* password, int start_index, int end_index, char* dir) {
+    if (start_index > 0 && start_index <= max_length) {
+        password[start_index] = '\0';  // Null-terminate the combination.
         int of = open_file(dir, password);
-        if(of == 0){
+        if (of == 0) {
             strcat(dir, " ");
             strcat(dir, password);
+            return;
         }
     }
 
-    if (index == max_length) {
-        return;
+    if (start_index == end_index) {
+        return; // end of the range.
     }
 
     for (int i = 0; i < strlen(chars); i++) {
-        password[index] = chars[i];
-        find_password(chars, max_length, password, index + 1, dir);
+        password[start_index] = chars[i];
+        find_password(chars, max_length, password, start_index + 1, end_index, dir);
     }
 }
 
@@ -184,12 +189,31 @@ void print_data(){
 // execute the search function divided by the ammount of threads. The work load must be
 // equal or almost in each thread.
 void execute_p(){
+    // Calculate the total number of operations.
+    long long total_combinations = 1;
+    int chars_number = 0;
+    // get the number of chars.
+    for(int i = 0; i < chars_size; ++i){
+        if(chars[i] != NULL){
+            chars_number++;
+        }
+    }
+
+    // get total combinations.
+    for (int i = 0; i < maxLen; i++) {
+        total_combinations *= chars_number;
+    }
+
+    // Calculate the combinations for each thread
+    int threads_number = sysconf(_SC_NPROCESSORS_ONLN); // get threads number.
+    long long combinations_per_thread = total_combinations / threads_number;
+
     // test passwords serial.
     char* password = (char*)malloc((maxLen + 1) * sizeof(char)); // +1 for null-termination
     if (password != NULL) {
         memset(password, 0, maxLen + 1); // Initialize the password buffer with null characters
     }
-    find_passwords(password);
+    //find_passwords(password);
 
     // free memo.
     free(password);
