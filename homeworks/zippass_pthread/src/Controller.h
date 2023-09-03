@@ -49,13 +49,8 @@ int open_file(char* dir, char* pass);
  * @param index The current index in the iteration.
  * @param dir The path of the zip file.
  */
-void find_password(char* chars, int max_length, char* password, int index, char* dir);
+void find_password(char* chars, int max_length, char* password, int start_index, int end_index, char* dir);
 
-/**
- * @brief Uses find_password function to find the passwords of all available zip file dirs.
- * @param password The string to store the password being tested.
- */
-void find_passwords(char* password);
 
 /**
  * @brief Prints the data to the output.
@@ -64,6 +59,9 @@ void print_data();
 
 //
 void execute_p();
+
+//
+void* thread_find_password(void* data);
 
 /**
  * @brief Runs all functions of the program.
