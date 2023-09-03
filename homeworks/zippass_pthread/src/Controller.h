@@ -62,6 +62,9 @@ void find_passwords(char* password);
  */
 void print_data();
 
+//
+void execute_p();
+
 /**
  * @brief Runs all functions of the program.
  * @param argc Number of arguments.

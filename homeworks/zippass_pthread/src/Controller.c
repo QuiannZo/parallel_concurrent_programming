@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <zip.h>
+#include <pthread.h>
 
 #include "Controller.h"
 
@@ -180,23 +181,34 @@ void print_data(){
     }
 }
 
-void run(int argc, char* argv[]){
-    //Init vars.
-    init();
-    // run func.
-    read_data(argc, argv);
-
-    // test passwords
+// execute the search function divided by the ammount of threads. The work load must be
+// equal or almost in each thread.
+void execute_p(){
+    // test passwords serial.
     char* password = (char*)malloc((maxLen + 1) * sizeof(char)); // +1 for null-termination
     if (password != NULL) {
         memset(password, 0, maxLen + 1); // Initialize the password buffer with null characters
     }
     find_passwords(password);
 
-    // print the data to the output.
+    // free memo.
+    free(password);
+}
+
+void run(int argc, char* argv[]){
+    //Init vars.
+    init();
+
+    // read data.
+    read_data(argc, argv);
+
+    // execute the search.
+    execute_p();
+
+    // print the data modified data to the output.
     print_data();
     
     // Free memory.
     free_memo();
-    free(password);
+
 }
