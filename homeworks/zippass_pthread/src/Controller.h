@@ -52,7 +52,7 @@ unsigned long long calculateCombinations(int charArrayLength, int maxLength);
  * @param index The current index in the iteration.
  * @param dir The path of the zip file.
  */
-void find_password(char* chars, int max_length, char* dir, int itr) ;
+void find_password(char* chars, int max_length, char* dir) ;
 
 /**
  * @brief Uses find_password function to find the passwords of all available zip file dirs.

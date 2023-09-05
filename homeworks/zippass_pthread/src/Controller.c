@@ -173,7 +173,8 @@ unsigned long long calculateCombinations(int charArrayLength, int maxLength) {
 }
 
 // Correction. Iterative version. Faster and easier than the recursive.
-void find_password(char* chars, int max_length, char* dir, int itr) {
+/*
+void find_password(char* chars, int max_length, char* dir) {
     char password[max_length + 1]; // +1 for the null-terminator
     int length;
     for (length = 1; length <= max_length; length++) {
@@ -209,13 +210,35 @@ void find_password(char* chars, int max_length, char* dir, int itr) {
             }
         }
     }
+}*/
+
+void find_password(char* chars, int max_length, char* dir) {
+    int char_set_length = strlen(chars);
+    
+    for (int length = 1; length <= max_length; ++length) { // Iterar a través de las longitudes.
+        for (int i = 0; i < custom_pow(char_set_length, length); ++i) { // Iterar a través de las combinaciones de caracteres.
+            int num = i;
+            char password[length + 1]; // +1 para el carácter nulo al final de la cadena.
+            
+            for (int j = 0; j < length; ++j) { // Construir la contraseña en base al número actual.
+                int index = num % char_set_length;
+                password[j] = chars[index];
+                num /= char_set_length;
+            }
+            
+            password[length] = '\0'; // Agregar el carácter nulo al final de la contraseña.
+            
+            // Aquí puedes hacer lo que necesites con la contraseña generada, como imprimir o verificar.
+            printf("%s\n", password);
+        }
+    }
 }
 
 void find_passwords(){
     // cycle through all the zip dirs and apply the find_pass() func.
     int i = 0;
     while(i < paths_size && paths[i][0] != '\0'){
-        find_password(chars, maxLen, paths[i], 0);
+        find_password(chars, maxLen, paths[i]);
         i++;
     }
 }
