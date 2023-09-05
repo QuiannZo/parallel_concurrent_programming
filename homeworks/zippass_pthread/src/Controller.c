@@ -218,7 +218,7 @@ void find_password(char* chars, int max_length, char* dir) {
     for (int length = 1; length <= max_length; ++length) { // Iterar a través de las longitudes.
         for (int i = 0; i < custom_pow(char_set_length, length); ++i) { // Iterar a través de las combinaciones de caracteres.
             int num = i;
-            char password[length + 1]; // +1 para el carácter nulo al final de la cadena.
+            char password[length + 1];
             
             for (int j = 0; j < length; ++j) { // Construir la contraseña en base al número actual.
                 int index = num % char_set_length;
@@ -226,9 +226,7 @@ void find_password(char* chars, int max_length, char* dir) {
                 num /= char_set_length;
             }
             
-            password[length] = '\0'; // Agregar el carácter nulo al final de la contraseña.
-            
-            // Aquí puedes hacer lo que necesites con la contraseña generada, como imprimir o verificar.
+            password[length] = '\0';
             printf("%s\n", password);
         }
     }
