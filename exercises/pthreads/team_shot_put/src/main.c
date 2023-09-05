@@ -48,7 +48,7 @@ void* get_data(void* data){
     for(int i = 0; i < players_per_team; ++i){
         // create_thread athlete_one.
         pthread_t thread_one;
-        void* num_one;
+        double num_one;
         int error_one = pthread_create(&thread_one, NULL, shot_one, &num_one);
         if (error_one == EXIT_SUCCESS) {
             pthread_join(thread_one, &num_one);
@@ -60,7 +60,7 @@ void* get_data(void* data){
 
         // create_thread athlete_two.
         pthread_t thread_two;
-        void* num_two;
+        double num_two;
         int error_two = pthread_create(&thread_two, /*attr*/ NULL, shot_two, /*arg*/ &num_two);
         if (error_two == EXIT_SUCCESS) {
             pthread_join(thread_two, &num_two);
