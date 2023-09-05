@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <zip.h>
+#include <pthread.h>
 
 #include "Controller.h"
 
@@ -93,6 +94,7 @@ void read_data(int argc, char* argv[]){
 }
 
 int open_file(char* dir, char* pass){
+    printf("Password: %s\n", pass);
     int res = 0;
     const char* password = pass;
     const char* directory = dir;
@@ -143,8 +145,35 @@ int open_file(char* dir, char* pass){
     return res;
 }
 
+double cus_pow(double base, int exponent) {
+    double result = 1.0;
+
+    if (exponent < 0) {
+        base = 1.0 / base;
+        exponent = -exponent;
+    }
+
+    for (int i = 0; i < exponent; i++) {
+        result *= base;
+    }
+
+    return result;
+}
+
+unsigned long long calculateCombinations(int charArrayLength, int maxLength) {
+    unsigned long long combinations = 0;
+
+    if (maxLength > 0) {
+        for (int length = 1; length <= maxLength; length++) {
+            combinations += cus_pow(charArrayLength, length);
+        }
+    }
+
+    return combinations;
+}
+
 // Correction. Iterative version. Faster and easier than the recursive.
-void find_password(char* chars, int max_length, char* dir) {
+void find_password(char* chars, int max_length, char* dir, int itr) {
     char password[max_length + 1]; // +1 for the null-terminator
     int length;
     for (length = 1; length <= max_length; length++) {
@@ -186,7 +215,7 @@ void find_passwords(){
     // cycle through all the zip dirs and apply the find_pass() func.
     int i = 0;
     while(i < paths_size && paths[i][0] != '\0'){
-        find_password(chars, maxLen, paths[i]);
+        find_password(chars, maxLen, paths[i], 0);
         i++;
     }
 }

@@ -41,6 +41,9 @@ void read_data(int argc, char* argv[]);
  */
 int open_file(char* dir, char* pass);
 
+double cus_pow(double base, int exponent);
+unsigned long long calculateCombinations(int charArrayLength, int maxLength);
+
 /**
  * @brief Function to find the password using brute force.
  * @param chars Chars array.
@@ -49,7 +52,7 @@ int open_file(char* dir, char* pass);
  * @param index The current index in the iteration.
  * @param dir The path of the zip file.
  */
-void find_password(char* chars, int max_length, char* dir) ;
+void find_password(char* chars, int max_length, char* dir, int itr) ;
 
 /**
  * @brief Uses find_password function to find the passwords of all available zip file dirs.
