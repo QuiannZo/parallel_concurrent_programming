@@ -4,6 +4,10 @@
 #include <stdbool.h>
 #include <zip.h>
 #include <pthread.h>
+#include <inttypes.h>
+#include <stdint.h>
+#include <time.h>
+#include <unistd.h>
 
 #include "Controller.h"
 
@@ -13,6 +17,18 @@ int chars_size = 100;
 int maxLen; // Maximum password length.
 char *chars = NULL; // chars by the input.
 char **paths = NULL; // paths of the zip files.
+
+// Private thread memory.
+typedef struct {
+    // temp zip.
+    char* temp_zip_path;
+    // other args.
+    char* chars;
+    int max_length;
+    char* dir;
+    int thread_id;
+    int num_threads;
+} thread_args;
 
 void init(){
     // Allocate memory for chars.
@@ -147,20 +163,17 @@ int open_file(char* dir, char* pass){
 
 double cus_pow(double base, int exponent) {
     double result = 1.0;
-
     if (exponent < 0) {
         base = 1.0 / base;
         exponent = -exponent;
     }
-
     for (int i = 0; i < exponent; i++) {
         result *= base;
     }
-
     return result;
 }
 
-unsigned long long calculateCombinations(int charArrayLength, int maxLength) {
+unsigned long long calculate_total_combinations(int charArrayLength, int maxLength) {
     unsigned long long combinations = 0;
 
     if (maxLength > 0) {
@@ -172,73 +185,42 @@ unsigned long long calculateCombinations(int charArrayLength, int maxLength) {
     return combinations;
 }
 
-// Correction. Iterative version. Faster and easier than the recursive.
-/*
-void find_password(char* chars, int max_length, char* dir) {
-    char password[max_length + 1]; // +1 for the null-terminator
-    int length;
-    for (length = 1; length <= max_length; length++) {
-        int index[length];
-        memset(index, 0, sizeof(index)); // Initialize index array
-
-        while (1) {
-            // Generate the password for the current combination of indices
-            for (int i = 0; i < length; i++) {
-                password[i] = chars[index[i]];
-            }
-            password[length] = '\0';
-
-            int of = open_file(dir, password);
-            if (of == 0) {
-                strcat(dir, " ");
-                strcat(dir, password);
-            }
-
-            // Increment indices
-            int i;
-            for (i = length - 1; i >= 0; i--) {
-                if (index[i] < strlen(chars) - 1) {
-                    index[i]++;
-                    break;
-                } else {
-                    index[i] = 0;
-                }
-            }
-
-            if (i < 0) {
-                break; // All indices have reached their maximum, exit loop
-            }
-        }
-    }
-}*/
-
-void find_password(char* chars, int max_length, char* dir) {
+// The find_password function modified to allow threads to access it.
+void* find_password_parallel(void* data){
+    thread_args* thread_data = (thread_args*)data;
+    char* chars = thread_data->chars;
     int char_set_length = strlen(chars);
-    
-    for (int length = 1; length <= max_length; ++length) { // Iterar a través de las longitudes.
-        for (int i = 0; i < custom_pow(char_set_length, length); ++i) { // Iterar a través de las combinaciones de caracteres.
+    int max_length = thread_data->max_length;
+    char* dir = thread_data->dir;
+    int thread_id = thread_data->thread_id;
+    int num_threads = thread_data->num_threads;
+
+    // Mapeo estatico...
+    int min_length = (max_length / num_threads) * thread_id + 1;
+    int max_length_thread = (thread_id == num_threads - 1) ? max_length : (max_length / num_threads) * (thread_id + 1);
+
+    // Password search by brute force.
+    for (int length = min_length; length <= max_length_thread; ++length) {
+        for (int i = 0; i < cus_pow(char_set_length, length); ++i) {
             int num = i;
             char password[length + 1];
             
-            for (int j = 0; j < length; ++j) { // Construir la contraseña en base al número actual.
+            for (int j = 0; j < length; ++j) {
                 int index = num % char_set_length;
                 password[j] = chars[index];
                 num /= char_set_length;
             }
             
             password[length] = '\0';
-            printf("%s\n", password);
+            int of = open_file(dir, password);
+            if (of == 0) {
+                strcat(dir, " ");
+                strcat(dir, password);
+            }
         }
     }
-}
-
-void find_passwords(){
-    // cycle through all the zip dirs and apply the find_pass() func.
-    int i = 0;
-    while(i < paths_size && paths[i][0] != '\0'){
-        find_password(chars, maxLen, paths[i]);
-        i++;
-    }
+    
+    pthread_exit(NULL);
 }
 
 void print_data(){
@@ -255,17 +237,32 @@ void run(int argc, char* argv[]){
     // run func.
     read_data(argc, argv);
 
-    // test passwords
-    char* password = (char*)malloc((maxLen + 1) * sizeof(char)); // +1 for null-termination
-    if (password != NULL) {
-        memset(password, 0, maxLen + 1); // Initialize the password buffer with null characters
+    // // test passwords.
+
+    // thread number in the machine.
+    uint64_t thread_count = sysconf(_SC_NPROCESSORS_ONLN);
+
+    // create the arr of threads and their data structs.
+    pthread_t threads[thread_count];
+    thread_args thread_args[thread_count];
+
+    for (int i = 0; i < thread_count; ++i) {
+        thread_args[i].chars = chars;
+        thread_args[i].max_length = maxLen;
+        thread_args[i].dir = paths[0];
+        thread_args[i].thread_id = i;
+        thread_args[i].num_threads = thread_count;
+
+        pthread_create(&threads[i], NULL, find_password_parallel, (void*)&thread_args[i]);
     }
-    find_passwords();
+    
+    for (int i = 0; i < thread_count; ++i) {
+        pthread_join(threads[i], NULL);
+    }
 
     // print the data to the output.
     print_data();
     
     // Free memory.
     free_memo();
-    free(password);
 }
