@@ -185,6 +185,22 @@ unsigned long long calculate_total_combinations(int charArrayLength, int maxLeng
     return combinations;
 }
 
+int min_val(int first, int second){
+    if(first < second){
+        return first;
+    } else if(second < first){
+        return second;
+    }
+    return first;
+}
+
+void static_mapping(int *min, int *max, int thread_num, unsigned long long workload){
+    // total threads.
+    uint64_t thread_count = sysconf(_SC_NPROCESSORS_ONLN);
+    *min = (thread_num * (workload / thread_count)) + min_val(thread_num, (workload % thread_count));
+    *max = ((thread_num + 1) * (workload / thread_count)) + min_val(thread_num, (workload % thread_count));
+}
+
 // The find_password function modified to allow threads to access it.
 void* find_password_parallel(void* data){
     thread_args* thread_data = (thread_args*)data;
@@ -195,16 +211,22 @@ void* find_password_parallel(void* data){
     int thread_id = thread_data->thread_id;
     int num_threads = thread_data->num_threads;
 
-    // Mapeo estatico...
-    int min_length = (max_length / num_threads) * thread_id + 1;
-    int max_length_thread = (thread_id == num_threads - 1) ? max_length : (max_length / num_threads) * (thread_id + 1);
-
     // Password search by brute force.
-    for (int length = min_length; length <= max_length_thread; ++length) {
-        for (int i = 0; i < cus_pow(char_set_length, length); ++i) {
+    // length of the password.
+    for (int length = 1; length <= maxLen; ++length) {
+
+        // Mapeo estatico...
+        int min_len, max_len = 0;
+        unsigned long long workload = calculate_total_combinations(strlen(chars), length);
+        static_mapping(&min_len, &max_len, thread_id, workload);
+
+        // calculate thread total combinations.
+        int x = 0;
+        for (int i = min_len; i < max_len; ++i) {
             int num = i;
             char password[length + 1];
             
+            // cambio de base.
             for (int j = 0; j < length; ++j) {
                 int index = num % char_set_length;
                 password[j] = chars[index];
@@ -212,11 +234,11 @@ void* find_password_parallel(void* data){
             }
             
             password[length] = '\0';
-            int of = open_file(dir, password);
+            /*int of = open_file(dir, password);
             if (of == 0) {
                 strcat(dir, " ");
                 strcat(dir, password);
-            }
+            }*/
         }
     }
     
