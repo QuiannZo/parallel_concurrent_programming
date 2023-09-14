@@ -119,6 +119,8 @@ void run(int argc, char* argv[]){
     int k = 0;
     while(k < paths_size && paths[k][0] != '\0'){
         for (int i = 0; i < thread_count; ++i) {
+
+            // Assign the arguments.
             thread_args[i].chars = chars;
             thread_args[i].max_length = maxLen;
             thread_args[i].dir = paths[k];
