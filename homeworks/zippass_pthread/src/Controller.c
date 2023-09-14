@@ -110,7 +110,6 @@ void read_data(int argc, char* argv[]){
 }
 
 int open_file(char* dir, char* pass){
-    printf("Password: %s\n", pass);
     int res = 0;
     const char* password = pass;
     const char* directory = dir;
@@ -234,11 +233,11 @@ void* find_password_parallel(void* data){
             }
             
             password[length] = '\0';
-            /*int of = open_file(dir, password);
+            int of = open_file(dir, password);
             if (of == 0) {
                 strcat(dir, " ");
                 strcat(dir, password);
-            }*/
+            }
         }
     }
     
@@ -268,18 +267,23 @@ void run(int argc, char* argv[]){
     pthread_t threads[thread_count];
     thread_args thread_args[thread_count];
 
-    for (int i = 0; i < thread_count; ++i) {
-        thread_args[i].chars = chars;
-        thread_args[i].max_length = maxLen;
-        thread_args[i].dir = paths[0];
-        thread_args[i].thread_id = i;
-        thread_args[i].num_threads = thread_count;
+    // Cycle through all possible files.
+    int k = 0;
+    while(k < paths_size && paths[k][0] != '\0'){
+        for (int i = 0; i < thread_count; ++i) {
+            thread_args[i].chars = chars;
+            thread_args[i].max_length = maxLen;
+            thread_args[i].dir = paths[k];
+            thread_args[i].thread_id = i;
+            thread_args[i].num_threads = thread_count;
 
-        pthread_create(&threads[i], NULL, find_password_parallel, (void*)&thread_args[i]);
-    }
-    
-    for (int i = 0; i < thread_count; ++i) {
-        pthread_join(threads[i], NULL);
+            pthread_create(&threads[i], NULL, find_password_parallel, (void*)&thread_args[i]);
+        }
+        
+        for (int i = 0; i < thread_count; ++i) {
+            pthread_join(threads[i], NULL);
+        }
+        k++;
     }
 
     // print the data to the output.
