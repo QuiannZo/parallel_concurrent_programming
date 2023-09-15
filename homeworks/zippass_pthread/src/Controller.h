@@ -34,29 +34,6 @@ void free_memo();
 void read_data(int argc, char* argv[]);
 
 /**
- * @brief Opens a zip file and checks if the password is correct.
- * @param dir The dir of the zip file.
- * @param pass Password string.
- * @return 0: if the content verification is successful. 1: if verification fails. 2: if an errors appears.
- */
-int open_file(char* dir, char* pass);
-
-double cus_pow(double base, int exponent);
-unsigned long long calculate_total_combinations(int charArrayLength, int maxLength);
-
-/**
- * @brief Function to find the password using brute force.
- * @param chars Chars array.
- * @param max_length The maximum length of the password.
- * @param password The current password being tested.
- * @param index The current index in the iteration.
- * @param dir The path of the zip file.
- */
-//void find_password(char* chars, int max_length, char* dir) ;
-
-void* find_password_parallel(void* data);
-
-/**
  * @brief Prints the data to the output.
  */
 void print_data();
