@@ -35,7 +35,7 @@ To use this program, you must run it using a terminal. The format is:
 With this, you can run the program and wait till it finishes cycling around the possible passwords. This process will take a while.
 
 ## Optimized version
-For the optimized version of the program, the proyect has a readme.md in the report folder wich you can access [here](/homeworks/zippass_optimized/report/readme.md).
+For the optimized version of the program, the proyect has a readme.md in the report folder wich you can access [here](/home/quiannzo/Desktop/concurrente23b-quiann_zolfaghari/homeworks/zippass_optimized/report/readme.md). This report file will contain all optimizations done and their results, along with graphs and explanations required by the instructions.
 
 ## Authors and acknowledgment
 Main contributor:

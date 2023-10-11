@@ -115,6 +115,7 @@ void* find_password_parallel(void* data){
                 strcat(dir, password);
 
                 // Break to stop generating passwords after one is found.
+                // Minimal improvement.
                 break;
             }
         }
