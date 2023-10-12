@@ -44,7 +44,7 @@ int open_file(char* dir, char* pass){
 
     // Check if the password was correct.
     if (entry != NULL) {
-        char buffer[256];
+        char buffer[512];
         ssize_t bytesRead = zip_fread(entry, buffer, sizeof(buffer));
         if (bytesRead > 0) {
             buffer[bytesRead] = '\0';
@@ -71,7 +71,9 @@ int open_file(char* dir, char* pass){
 
 void static_mapping(int *min, int *max, int thread_num, unsigned long long workload){
     // total threads.
-    uint64_t thread_count = sysconf(_SC_NPROCESSORS_ONLN);
+    //*************//
+    //uint64_t thread_count = sysconf(_SC_NPROCESSORS_ONLN);
+    uint64_t thread_count = 1;
     *min = (thread_num * (workload / thread_count)) + min_val(thread_num, (workload % thread_count));
     *max = ((thread_num + 1) * (workload / thread_count)) + min_val(thread_num, (workload % thread_count));
 }
@@ -89,14 +91,12 @@ void* find_password_parallel(void* data){
     // Password search by brute force.
     // length of the password.
     for (int length = 1; length <= maxLen; ++length) {
-
         // Mapeo estatico...
         int min_len, max_len = 0;
         unsigned long long workload = calculate_total_combinations(strlen(chars), length);
         static_mapping(&min_len, &max_len, thread_id, workload);
 
         // calculate thread total combinations.
-        int x = 0;
         for (int i = min_len; i < max_len; ++i) {
             int num = i;
             char password[length + 1];
