@@ -32,3 +32,15 @@ The performance increased successfully, and in bigger cases it will decrease tim
 ![Alt text](perf_serial_01-2.png)
 
 ![Alt text](perf_serial_01_1.png)
+
+# Optimization 2: Pthread.
+
+The second optimization is an extension of the first program, now being parallel. This optimization as mentioned in the instructions is already done, but I will show some results on the performance improvements achieved thanks to multithreading. Detailed data of the optimization and its results can be encountered on the sheet.
+
+Here we have a comparison of performance on the same task of a serial and a parallel version of the program. Note that these mesurements are limited by the machine used which has only 4 threads. The final results written in the sheet are tested with an 8 core machine.
+
+![Alt text](pthread_01.png)
+
+![Alt text](pthread_02.png)
+
+The performance increased by a lot, but the machine limited the potencial of the parallel solution. 

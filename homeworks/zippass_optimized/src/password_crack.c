@@ -72,8 +72,8 @@ int open_file(char* dir, char* pass){
 void static_mapping(int *min, int *max, int thread_num, unsigned long long workload){
     // total threads.
     //*************//
-    //uint64_t thread_count = sysconf(_SC_NPROCESSORS_ONLN);
-    uint64_t thread_count = 1;
+    uint64_t thread_count = sysconf(_SC_NPROCESSORS_ONLN);
+    //uint64_t thread_count = 1;
     *min = (thread_num * (workload / thread_count)) + min_val(thread_num, (workload % thread_count));
     *max = ((thread_num + 1) * (workload / thread_count)) + min_val(thread_num, (workload % thread_count));
 }
@@ -116,7 +116,7 @@ void* find_password_parallel(void* data){
 
                 // Break to stop generating passwords after one is found.
                 // Minimal improvement.
-                break;
+                //break;
             }
         }
     }

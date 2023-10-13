@@ -110,8 +110,8 @@ void run(int argc, char* argv[]){
 
     // thread number in the machine.
     //*****************//
-    //uint64_t thread_count = sysconf(_SC_NPROCESSORS_ONLN);
-    uint64_t thread_count = 1;
+    uint64_t thread_count = sysconf(_SC_NPROCESSORS_ONLN);
+    //uint64_t thread_count = 1;
 
     // create the arr of threads and their data structs.
     pthread_t threads[thread_count];
