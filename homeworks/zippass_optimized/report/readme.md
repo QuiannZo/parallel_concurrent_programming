@@ -44,3 +44,17 @@ Here we have a comparison of performance on the same task of a serial and a para
 ![Alt text](pthread_02.png)
 
 The performance increased by a lot, but the machine limited the potencial of the parallel solution. 
+
+# Optimization 3: Prod-cons pattern.
+
+### Step 1-2: Non modified version performance.
+
+The performance achieved in the second optimization will be the basis of mesurement for the prod-cons mapping that I will do. Profiling wont be done in this case since the logic of the program will be changed.
+
+![Alt text](pthread_02.png)
+
+### Step 3-4: Optimization(design).
+
+The optimization that will be done now is the producer-consumer pattern in exchange of the static mapping used previously. This version will implement it and compare it to its previous version. The way i will be implemented is by using the zip files as the decomposition unit, meaning the paths will be passed to each thread when these are finished with them. 
+
+### Step 5. Implementation and results.

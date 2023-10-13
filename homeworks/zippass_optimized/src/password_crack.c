@@ -14,7 +14,7 @@
 int factor = 10;
 int paths_size = 50;
 int chars_size = 100;
-int maxLen; // Maximum password length.
+int maxLen; // Maximum password length.A
 char *chars = NULL; // chars by the input.
 char **paths = NULL; // paths of the zip files.
 
@@ -116,7 +116,7 @@ void* find_password_parallel(void* data){
 
                 // Break to stop generating passwords after one is found.
                 // Minimal improvement.
-                //break;
+                break;
             }
         }
     }
