@@ -12,6 +12,7 @@
 #include <unistd.h>
 
 #include "password_crack.h"
+#include "queue.h"
 
 void init(){
     // Allocate memory for chars.
@@ -100,42 +101,58 @@ void print_data(){
     }
 }
 
+//
+void* consumer_thread(void* arg) {
+    Queue* queue = (Queue*)arg;
+    while (true) {
+        char* dir = dequeue(queue);
+        if (dir == NULL) {
+            break; // No more work to do.
+        }
+
+        // Perform password search.
+        find_password_parallel(dir, maxLen, chars);
+
+        // Remember to free the 'dir' if you allocated memory for it.
+        free(dir);
+    }
+
+    pthread_exit(NULL);
+}
+
 void run(int argc, char* argv[]){
     //Init vars.
     init();
     // run func.
     read_data(argc, argv);
 
-    // // test passwords.
+    // Init queue.
+    Queue queue;
+    init_queue(&queue);
 
-    // thread number in the machine.
-    //*****************//
-    uint64_t thread_count = sysconf(_SC_NPROCESSORS_ONLN);
-    //uint64_t thread_count = 1;
+    // // test passwords.
+    //uint64_t thread_count = sysconf(_SC_NPROCESSORS_ONLN);
+    uint64_t thread_count = 4;
 
     // create the arr of threads and their data structs.
     pthread_t threads[thread_count];
     thread_args thread_args[thread_count];
 
-    // Cycle through all possible files.
+    // Cycle.
+    for (int i = 0; i < thread_count; i++) {
+        pthread_create(&threads[i], NULL, consumer_thread, &queue);
+    }
+
+    // Producer: Enqueue zip directories.
     int k = 0;
-    while(k < paths_size && paths[k][0] != '\0'){
-        for (int i = 0; i < thread_count; ++i) {
-
-            // Assign the arguments.
-            thread_args[i].chars = chars;
-            thread_args[i].max_length = maxLen;
-            thread_args[i].dir = paths[k];
-            thread_args[i].thread_id = i;
-            thread_args[i].num_threads = thread_count;
-
-            pthread_create(&threads[i], NULL, find_password_parallel, (void*)&thread_args[i]);
-        }
-        
-        for (int i = 0; i < thread_count; ++i) {
-            pthread_join(threads[i], NULL);
-        }
+    while (k < paths_size && paths[k][0] != '\0') {
+        enqueue(&queue, paths[k]);
         k++;
+    }
+
+    // Wait for consumer threads to finish.
+    for (int i = 0; i < thread_count; i++) {
+        pthread_join(threads[i], NULL);
     }
 
     // print the data to the output.

@@ -51,4 +51,4 @@ void static_mapping(int *min, int *max, int thread_num, unsigned long long workl
  * serial now so the workload is divisible.
  * @param data the private data of the thread.
  */
-void* find_password_parallel(void* data);
+void find_password_parallel(char* dir, int maxLength, char* chars);

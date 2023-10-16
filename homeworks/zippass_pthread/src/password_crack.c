@@ -113,6 +113,9 @@ void* find_password_parallel(void* data){
             if (of == 0) {
                 strcat(dir, " ");
                 strcat(dir, password);
+
+                // Break the cycle if found.
+                break;
             }
         }
     }

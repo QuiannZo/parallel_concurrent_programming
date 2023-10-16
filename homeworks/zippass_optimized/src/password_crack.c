@@ -69,35 +69,16 @@ int open_file(char* dir, char* pass){
     return res;
 }
 
-void static_mapping(int *min, int *max, int thread_num, unsigned long long workload){
-    // total threads.
-    //*************//
-    uint64_t thread_count = sysconf(_SC_NPROCESSORS_ONLN);
-    //uint64_t thread_count = 1;
-    *min = (thread_num * (workload / thread_count)) + min_val(thread_num, (workload % thread_count));
-    *max = ((thread_num + 1) * (workload / thread_count)) + min_val(thread_num, (workload % thread_count));
-}
-
 // The find_password function modified to allow threads to access it.
-void* find_password_parallel(void* data){
-    thread_args* thread_data = (thread_args*)data;
-    char* chars = thread_data->chars;
+void find_password_parallel(char* dir, int maxLength, char* chars){
     int char_set_length = strlen(chars);
-    int max_length = thread_data->max_length;
-    char* dir = thread_data->dir;
-    int thread_id = thread_data->thread_id;
-    int num_threads = thread_data->num_threads;
+    int max_length = maxLength;
 
     // Password search by brute force.
     // length of the password.
     for (int length = 1; length <= maxLen; ++length) {
-        // Mapeo estatico...
-        int min_len, max_len = 0;
-        unsigned long long workload = calculate_total_combinations(strlen(chars), length);
-        static_mapping(&min_len, &max_len, thread_id, workload);
-
         // calculate thread total combinations.
-        for (int i = min_len; i < max_len; ++i) {
+        for (int i = 0; i < calculate_total_combinations(strlen(chars), length); ++i) {
             int num = i;
             char password[length + 1];
             
@@ -109,6 +90,7 @@ void* find_password_parallel(void* data){
             }
             
             password[length] = '\0';
+            printf("%s\n", password);
             int of = open_file(dir, password);
             if (of == 0) {
                 strcat(dir, " ");
@@ -120,6 +102,4 @@ void* find_password_parallel(void* data){
             }
         }
     }
-    
-    pthread_exit(NULL);
 }

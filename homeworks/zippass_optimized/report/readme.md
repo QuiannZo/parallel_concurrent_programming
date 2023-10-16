@@ -58,3 +58,4 @@ The performance achieved in the second optimization will be the basis of mesurem
 The optimization that will be done now is the producer-consumer pattern in exchange of the static mapping used previously. This version will implement it and compare it to its previous version. The way i will be implemented is by using the zip files as the decomposition unit, meaning the paths will be passed to each thread when these are finished with them. 
 
 ### Step 5. Implementation and results.
+
