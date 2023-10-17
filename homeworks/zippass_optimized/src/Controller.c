@@ -111,7 +111,7 @@ void* consumer_thread(void* arg) {
         }
 
         // Perform password search.
-        find_password_parallel(dir, maxLen, chars);
+        find_password_parallel(dir);
 
         // Remember to free the 'dir' if you allocated memory for it.
         free(dir);
@@ -132,7 +132,7 @@ void run(int argc, char* argv[]){
 
     // // test passwords.
     //uint64_t thread_count = sysconf(_SC_NPROCESSORS_ONLN);
-    uint64_t thread_count = 4;
+    uint64_t thread_count = 1;
 
     // create the arr of threads and their data structs.
     pthread_t threads[thread_count];

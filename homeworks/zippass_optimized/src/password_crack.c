@@ -70,9 +70,9 @@ int open_file(char* dir, char* pass){
 }
 
 // The find_password function modified to allow threads to access it.
-void find_password_parallel(char* dir, int maxLength, char* chars){
+void find_password_parallel(char* dir){
     int char_set_length = strlen(chars);
-    int max_length = maxLength;
+    int max_length = maxLen;
 
     // Password search by brute force.
     // length of the password.
@@ -90,7 +90,7 @@ void find_password_parallel(char* dir, int maxLength, char* chars){
             }
             
             password[length] = '\0';
-            printf("%s\n", password);
+            printf("%s: %s\n",dir, password);
             int of = open_file(dir, password);
             if (of == 0) {
                 strcat(dir, " ");
@@ -98,7 +98,7 @@ void find_password_parallel(char* dir, int maxLength, char* chars){
 
                 // Break to stop generating passwords after one is found.
                 // Minimal improvement.
-                break;
+                //break;
             }
         }
     }
