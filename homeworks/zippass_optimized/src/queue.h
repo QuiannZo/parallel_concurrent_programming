@@ -1,24 +1,18 @@
 #include <pthread.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <semaphore.h>
 
-// Given by ChatGPT. I must declare a constant here.
-#define MAX_QUEUE_SIZE 10 // Adjust the size according to your needs
+#define QUEUE_SIZE 100
 
 typedef struct {
-    char* items[MAX_QUEUE_SIZE];
+    char* items[QUEUE_SIZE];
     int front, rear;
-    pthread_mutex_t mutex;
-    pthread_cond_t not_empty, not_full;
+    sem_t empty, full, mutex;
 } Queue;
 
-void init_queue(Queue* q);
-
-bool is_empty(Queue* q);
-
-bool is_full(Queue* q);
+void initialize_queue(Queue* q);
 
 void enqueue(Queue* q, char* item);
 
 char* dequeue(Queue* q);
+
+bool is_queue_empty(Queue* q);

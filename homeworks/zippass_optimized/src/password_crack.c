@@ -12,7 +12,7 @@
 #include "common.h"
 
 int factor = 10;
-int paths_size = 50;
+int paths_size = 256;
 int chars_size = 100;
 int maxLen; // Maximum password length.A
 char *chars = NULL; // chars by the input.
@@ -90,7 +90,6 @@ void find_password_parallel(char* dir){
             }
             
             password[length] = '\0';
-            printf("%s: %s\n",dir, password);
             int of = open_file(dir, password);
             if (of == 0) {
                 strcat(dir, " ");
@@ -98,7 +97,7 @@ void find_password_parallel(char* dir){
 
                 // Break to stop generating passwords after one is found.
                 // Minimal improvement.
-                //break;
+                break;
             }
         }
     }

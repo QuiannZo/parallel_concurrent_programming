@@ -10,9 +10,11 @@
 #include <stdint.h>
 #include <time.h>
 #include <unistd.h>
+#include <semaphore.h>
 
 #include "password_crack.h"
 #include "queue.h"
+
 
 void init(){
     // Allocate memory for chars.
@@ -101,22 +103,37 @@ void print_data(){
     }
 }
 
-//
-void* consumer_thread(void* arg) {
-    Queue* queue = (Queue*)arg;
-    while (true) {
-        char* dir = dequeue(queue);
-        if (dir == NULL) {
-            break; // No more work to do.
-        }
+void* producer(void* arg) {
+    printf("Prod created.\n");
+    Queue* q = (Queue*)arg;
 
-        // Perform password search.
-        find_password_parallel(dir);
-
-        // Remember to free the 'dir' if you allocated memory for it.
-        free(dir);
+    // Enqueue zip file dirs.
+    for (int i = 0; i < paths_size && paths[i][0] != '\0'; i++) {
+        enqueue(q, paths[i]);
     }
 
+    for (int i = 0; i < paths_size && paths[i][0] != '\0'; i++) {
+        enqueue(q, NULL);
+    }
+    printf("Prod ended.\n");
+    pthread_exit(NULL);
+}
+
+void* consumer(void* arg) {
+    printf("cons created.\n");
+    Queue* q = (Queue*)arg;
+
+    while (!(is_queue_empty(q))) {
+        char* dir = dequeue(q);
+
+        if (dir == NULL) {
+            break;
+        }
+
+        // Call find_password_parallel.
+        find_password_parallel(dir);
+    }
+    printf("Prod ended.\n");
     pthread_exit(NULL);
 }
 
@@ -126,33 +143,25 @@ void run(int argc, char* argv[]){
     // run func.
     read_data(argc, argv);
 
-    // Init queue.
     Queue queue;
-    init_queue(&queue);
+    initialize_queue(&queue);
 
     // // test passwords.
     //uint64_t thread_count = sysconf(_SC_NPROCESSORS_ONLN);
-    uint64_t thread_count = 1;
 
-    // create the arr of threads and their data structs.
-    pthread_t threads[thread_count];
-    thread_args thread_args[thread_count];
+    // Create producer and consumer threads.
+    pthread_t producer_thread;
+    pthread_t consumer_threads[thread_count];
 
-    // Cycle.
+    pthread_create(&producer_thread, NULL, producer, &queue);
     for (int i = 0; i < thread_count; i++) {
-        pthread_create(&threads[i], NULL, consumer_thread, &queue);
+        pthread_create(&consumer_threads[i], NULL, consumer, &queue);
     }
 
-    // Producer: Enqueue zip directories.
-    int k = 0;
-    while (k < paths_size && paths[k][0] != '\0') {
-        enqueue(&queue, paths[k]);
-        k++;
-    }
-
-    // Wait for consumer threads to finish.
+    // Join the threads.
+    pthread_join(producer_thread, NULL);
     for (int i = 0; i < thread_count; i++) {
-        pthread_join(threads[i], NULL);
+        pthread_join(consumer_threads[i], NULL);
     }
 
     // print the data to the output.

@@ -16,13 +16,7 @@ double cus_pow(double base, int exponent) {
 
 unsigned long long calculate_total_combinations(int charArrayLength, int maxLength) {
     unsigned long long combinations = 0;
-
-    if (maxLength > 0) {
-        for (int length = 1; length <= maxLength; length++) {
-            combinations += cus_pow(charArrayLength, length);
-        }
-    }
-
+    combinations += cus_pow(charArrayLength, maxLength);
     return combinations;
 }
 
