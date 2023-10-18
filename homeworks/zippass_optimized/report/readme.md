@@ -59,3 +59,30 @@ The optimization that will be done now is the producer-consumer pattern in excha
 
 ### Step 5. Implementation and results.
 
+For the implementation, I created a solution that takes the zip file directories as the decomposition unit and sends them into the threads to be processed. The data structure is a queue that has semaphores to control concurrency. The function find_password_parallel is now a void function that recieves a dir and resolves the password for one specific directory. Now, in terms of performance, the pthread version is faster, the possible reasons will be discussed after showing the results. In this case, the tests ran on a 12 processing unit computer, and the input used was input002.
+
+![Alt text](prodcons001.png)
+
+![Alt text](pthread001.png)
+
+As shown in the results, the prod-cons pattern works worse with the specific decomposition unit than the static mapping working on each directory. The possible causes as I see it are:
+
+    1. The workload is not distributed evenly. Take an input with three directories running on a computer with 12 processing units(this beeing my case). The three directories will be assigned to the first three threads and the rest will not do any work. This didnt happen in the static mapping.
+
+    2. The pattern uses a new data structure. This causes more resources being used.
+
+    3. The use of the pattern. The pattern it self has semaphores, new functions, that could cause the general solution to be slower.
+
+In my opinion, the first factor is the most relevant and can be easily proved.
+
+#### Optimization results
+
+The optimization results were expected, except for undefined behaviour on certain areas. This graph shows the comparison beetween the methods.
+
+![Alt text](image.png)
+
+#### Concurrency results
+
+The concurrency levels also presented predictable data. The only part that causes certain doubt of the results is the 24 vs 48 threads comparison which handed contrasting results.
+
+![Alt text](image-1.png)

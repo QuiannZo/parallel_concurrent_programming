@@ -15,7 +15,10 @@ extern int maxLen; // Maximum password length.
 extern char *chars; // chars by the input.
 extern char **paths; // paths of the zip files.
 
-// Private thread memory.
+/**
+ * @struct thread_args
+ * @brief Struct to hold threads private data.
+ */
 typedef struct {
     // temp zip.
     char* temp_zip_path;

@@ -104,7 +104,6 @@ void print_data(){
 }
 
 void* producer(void* arg) {
-    printf("Prod created.\n");
     Queue* q = (Queue*)arg;
 
     // Enqueue zip file dirs.
@@ -115,12 +114,11 @@ void* producer(void* arg) {
     for (int i = 0; i < paths_size && paths[i][0] != '\0'; i++) {
         enqueue(q, NULL);
     }
-    printf("Prod ended.\n");
+
     pthread_exit(NULL);
 }
 
 void* consumer(void* arg) {
-    printf("cons created.\n");
     Queue* q = (Queue*)arg;
 
     while (!(is_queue_empty(q))) {
@@ -133,7 +131,6 @@ void* consumer(void* arg) {
         // Call find_password_parallel.
         find_password_parallel(dir);
     }
-    printf("Prod ended.\n");
     pthread_exit(NULL);
 }
 
@@ -147,7 +144,7 @@ void run(int argc, char* argv[]){
     initialize_queue(&queue);
 
     // // test passwords.
-    //uint64_t thread_count = sysconf(_SC_NPROCESSORS_ONLN);
+    uint64_t thread_count = sysconf(_SC_NPROCESSORS_ONLN);
 
     // Create producer and consumer threads.
     pthread_t producer_thread;

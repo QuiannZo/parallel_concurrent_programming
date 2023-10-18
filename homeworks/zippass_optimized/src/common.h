@@ -9,6 +9,7 @@
  * @brief returns a base multiplied by itself exponent times.
  * @param base base of the exponent.
  * @param argv exponent of the base.
+ * @return the power of base to exponent.
  */
 double cus_pow(double base, int exponent);
 
@@ -17,6 +18,7 @@ double cus_pow(double base, int exponent);
  * maxLength as exponent.
  * @param charArrayLength number of possible chars.
  * @param maxLength the maximum length of the password.
+ * @return returns the total combinations, being charArrayLength to the power of maxLength.
  */
 unsigned long long calculate_total_combinations(int charArrayLength, int maxLength);
 
@@ -24,5 +26,6 @@ unsigned long long calculate_total_combinations(int charArrayLength, int maxLeng
  * @brief Returns the minimum value, and if there is none, the first number.
  * @param first first integer to compare.
  * @param second second integer to compare.
+ * @return returns the min value.
  */
 int min_val(int first, int second);

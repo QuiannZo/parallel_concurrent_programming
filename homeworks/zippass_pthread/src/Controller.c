@@ -109,7 +109,7 @@ void run(int argc, char* argv[]){
     // // test passwords.
 
     // thread number in the machine.
-    uint64_t thread_count = sysconf(_SC_NPROCESSORS_ONLN);
+    uint64_t thread_count = 12;
 
     // create the arr of threads and their data structs.
     pthread_t threads[thread_count];
