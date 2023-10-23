@@ -7,19 +7,30 @@ procedure main()
   create_thread(player1)
   create_thread(player2)
   create_thread(referee)
+
+  wait(players_ready, 2)  // Espera a que ambos jugadores estén listos.
+  signal(clock_ready)    // Avisa al árbitro que puede establecer el clock.
 end procedure
 
 procedure player1()
   enter_room()
+  signal(player1_ready)   // Jugador 1 listo.
+  wait(players_ready, 1)  // Espera a que el otro esté listo.
   play_chess()
 end procedure
 
 procedure player2()
   enter_room()
+  signal(player2_ready)   // Jugador 2 listo.
+  wait(players_ready, 1)  // Espera a que el otro esté listo.
   play_chess()
 end procedure
 
 procedure referee()
   enter_room()
+  wait(player1_ready, 1)  // Espera a que el jugador 1 esté listo.
+  wait(player2_ready, 1)  // Espera a que el jugador 2 esté listo.
+  signal(players_ready, 2)  // Avisa que ambos jugadores están listos.
   set_clock()
-end procedure
+  signal(clock_ready)      // reloj listo.
+end procedure 
