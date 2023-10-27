@@ -8,6 +8,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 
 // thread_shared_data_t
 typedef struct shared_data {
@@ -48,9 +49,9 @@ int main(int argc, char* argv[]) {
     for (uint64_t thread_number = 0; thread_number < shared_data->thread_count; ++thread_number) {
       char semaphore_name[64];
       sprintf(semaphore_name, "/my_semaphore_%lu", (unsigned long)thread_number);
-      // can_greet[thread_number] = create_named_semaphore.
+      // can_greet[thread_number] := create_named_semaphore
       error = sem_open(semaphore_name, O_CREAT | O_EXCL, S_IRUSR | S_IWUSR, !thread_number);
-      if (error == SEM_FAILED) {
+      if (error == (int)SEM_FAILED) {
         fprintf(stderr, "Error: could not create named semaphore\n");
         break;
       }
