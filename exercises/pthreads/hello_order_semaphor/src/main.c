@@ -5,8 +5,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <unistd.h>
+#include <time.h>
 
 // thread_shared_data_t
 typedef struct shared_data {
