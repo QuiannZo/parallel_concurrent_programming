@@ -1,0 +1,29 @@
+// Variable compartida...
+var next_thread_to_execute := 0
+var semaphore := create_semaphore(0)
+var mutex := create_mutex()
+
+procedure main:
+  declare thread_count := read_integer()
+  create_threads(thread_count, secondary)
+  for i from 0 to thread_count - 1:
+    join_thread(thread[i])
+end procedure
+
+procedure secondary:
+  lock(mutex)
+  var current_thread := next_thread_to_execute
+  next_thread_to_execute := next_thread_to_execute + 1
+  unlock(mutex)
+
+  // Esperar a que sea el turno del hilo actual.
+  wait_on_semaphore(semaphore)
+
+  statement a
+
+  // Actualizar la variable compartida
+  write_shared_variable(next_thread_to_execute, current_thread + 1)
+
+  // Señalizar que el hilo ya termino
+  signal(semaphore)
+end procedure

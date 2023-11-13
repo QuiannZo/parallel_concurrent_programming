@@ -1,0 +1,32 @@
+var semaphore_a, semaphore_b
+
+procedure main:
+  semaphore_a = create_semaphore(0)
+  semaphore_b = create_semaphore(0)
+
+  // Crear.
+  create_thread(thread_a)
+  create_thread(thread_b)
+  create_thread(thread_c)
+
+  // Join.
+  join_thread(thread_a)
+  join_thread(thread_b)
+  join_thread(thread_c)
+end procedure
+
+procedure thread_a:
+  statement a1
+  signal(semaphore_a)  // Señalizar que a1 ha terminado.
+end procedure
+
+procedure thread_b:
+  wait(semaphore_a)  // Esperar a que termine.
+  statement b1
+  signal(semaphore_b)  // Señalizar que b1 termino.
+end procedure
+
+procedure thread_c:
+  wait(semaphore_b)  // Esperar a que termine.
+  statement c1
+end procedure
