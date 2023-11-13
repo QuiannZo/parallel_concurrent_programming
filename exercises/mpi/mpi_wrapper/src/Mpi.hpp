@@ -1,34 +1,34 @@
-#ifndef MPI_HPP
-#define MPI_HPP
+#pragma once
 
 #include <mpi.h>
 #include <stdexcept>
 #include <iostream>
 #include <string>
+#include "MpiError.hpp"
 
 class Mpi {
 public:
     Mpi(int argc, char* argv[]) {
         // Inicializar el MPI.
         if (MPI_Init(&argc, &argv) != MPI_SUCCESS) {
-            throw std::runtime_error("Error initializing MPI.");
+            throw MpiError("Error initializing MPI.");
         }
 
         // Obtener número de proceso.
         if (MPI_Comm_rank(MPI_COMM_WORLD, &process_number) != MPI_SUCCESS) {
-            throw std::runtime_error("Error getting process number.");
+            throw MpiError("Error getting process number.", *this);
         }
 
         // Obtener cantidad de procesos.
         if (MPI_Comm_size(MPI_COMM_WORLD, &process_count) != MPI_SUCCESS) {
-            throw std::runtime_error("Error getting process count.");
+            throw MpiError("Error getting process count.", *this);
         }
 
         // Obtener el nombre del host.
         char hostname[MPI_MAX_PROCESSOR_NAME];
         int hostname_length;
         if (MPI_Get_processor_name(hostname, &hostname_length) != MPI_SUCCESS) {
-            throw std::runtime_error("Error getting hostname.");
+            throw MpiError("Error getting hostname.", *this);
         }
         process_hostname = std::string(hostname, hostname_length);
     }
@@ -56,5 +56,3 @@ private:
     int process_count;        // Cantidad de procesos
     std::string process_hostname;  // Nombre del host
 };
-
-#endif // MPI_HPP
