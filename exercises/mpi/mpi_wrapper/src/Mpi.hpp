@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <string>
+#include <vector>
 
 class Mpi {
 public:
@@ -50,15 +51,54 @@ public:
         return process_hostname;
     }
 
-    // Metodos para enviar y recibir valores MPI de cualquier tipo.
-    template <typename DataType>
-    void send(const DataType& value, int toProcess, int tag = 0) const {
+    // Send a scalar value to another process
+    template <typename Type>
+    void send(const Type& value, int toProcess, int tag = 0) const {
         MPI_Send(&value, 1, map(value), toProcess, tag, MPI_COMM_WORLD);
     }
 
-    template <typename DataType>
-    void receive(DataType& value, int fromProcess, int tag = MPI_ANY_TAG) const {
+    // Send an array of count values to another process
+    template <typename Type>
+    void send(const Type* values, int count, int toProcess, int tag = 0) const {
+        MPI_Send(values, count, map(values[0]), toProcess, tag, MPI_COMM_WORLD);
+    }
+
+    // Send an array of values to another process
+    template <typename Type>
+    void send(const std::vector<Type>& values, int toProcess, int tag = 0) const {
+        MPI_Send(values.data(), values.size(), map(values[0]), toProcess, tag, MPI_COMM_WORLD);
+    }
+
+    // Send a text to another process
+    void send(const std::string& text, int toProcess, int tag = 0) const {
+        const char* c_str = text.c_str();
+        MPI_Send(c_str, text.size() + 1, MPI_CHAR, toProcess, tag, MPI_COMM_WORLD);
+    }
+
+    // Wait until it receives a scalar value from another process
+    template <typename Type>
+    void receive(Type& value, int fromProcess = MPI_ANY_SOURCE, int tag = MPI_ANY_TAG) const {
         MPI_Recv(&value, 1, map(value), fromProcess, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
+
+    // Wait until it receives at most capacity values from another process
+    template <typename Type>
+    void receive(Type* values, int capacity, int fromProcess = MPI_ANY_SOURCE, int tag = MPI_ANY_TAG) const {
+        MPI_Recv(values, capacity, map(values[0]), fromProcess, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
+
+    // Wait until it receives at most capacity values from another process
+    template <typename Type>
+    void receive(std::vector<Type>& values, int capacity, int fromProcess = MPI_ANY_SOURCE, int tag = MPI_ANY_TAG) const {
+        values.resize(capacity);
+        MPI_Recv(values.data(), capacity, map(values[0]), fromProcess, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
+
+    // Wait until it receives a text of at most length chars from another process
+    void receive(std::string& text, int capacity, int fromProcess = MPI_ANY_SOURCE, int tag = MPI_ANY_TAG) const {
+        char buffer[capacity];
+        MPI_Recv(buffer, capacity, MPI_CHAR, fromProcess, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        text = buffer;
     }
 
 private:
@@ -99,6 +139,12 @@ private:
             return MPI_LONG_DOUBLE;
         else
             throw std::runtime_error("Unsupported MPI data type.");
+    }
+
+    // Mapeo para tipo array.
+    template <typename Type>
+    static MPI_Datatype map(const std::vector<Type>&) {
+        return map(Type());
     }
 };
 
