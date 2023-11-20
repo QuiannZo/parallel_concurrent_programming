@@ -96,7 +96,8 @@ public:
 
     // Wait until it receives a text of at most length chars from another process
     void receive(std::string& text, int capacity, int fromProcess = MPI_ANY_SOURCE, int tag = MPI_ANY_TAG) const {
-        char buffer[capacity];
+        char buffer[capacity + 1];
+        buffer[capacity + 1] = '\0';
         MPI_Recv(buffer, capacity, MPI_CHAR, fromProcess, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         text = buffer;
     }
