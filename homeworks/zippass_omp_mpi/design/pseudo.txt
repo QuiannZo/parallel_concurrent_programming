@@ -1,0 +1,42 @@
+typedef struct private data;
+
+int open_file:
+    open zip_file;
+    check if the operation was valid;
+    get number of entries in zip-file;
+    ckeck if the operation was valid;
+    open_file_encrypted with password
+        if the operation is successful return 0;
+        else return 1;
+
+void static_mapping:
+    get the number of threads in system;
+    calculate min;
+    calculate max;
+
+void find_password_parallel
+    get data from void* data;
+    for i in range from 1 to max legth:
+        get static mapped ranges with the function and formula;
+        for int j = minimum range to j = maximum range:
+            num = i;
+            password of size length + 1;
+            apply base switch;
+            password in length = '\n';
+            int of = openfile;
+            if of == 0 add password to directory string;
+
+void run:
+    init;
+    read data;
+    get number of threads from system;
+    create pthread_t array of threads;
+    create thread_args array of args;
+    while i < paths_size and paths != NULL:
+        for k = 0 to thread_count:
+            assisgn the args;
+            create thread;
+        for k = 0 to thread_count
+            join the threads;
+    print_data;
+    free_memo;
