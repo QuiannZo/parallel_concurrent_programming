@@ -12,6 +12,9 @@
 
 class Mpi;
 
+///// Doesnt work. Couldnt figure out why. /////
+// Implementation on Mpi.hpp was commented to not make the other exercises fail.
+
 class MpiStream {
 public:
     MpiStream(int targetProcess, Mpi& mpi) : targetProcess(targetProcess), mpi(mpi) {

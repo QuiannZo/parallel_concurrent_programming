@@ -8,9 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "MpiStream.hpp"
-
-class MpiStream;
+//#include "MpiStream.hpp"
+//class MpiStream;
 
 class Mpi {
 public:
@@ -44,10 +43,10 @@ public:
         MPI_Finalize();
     }
 
-    // operador de corchetes
-    MpiStream operator[](int targetProcess) {
-        return MpiStream(targetProcess, *this);
-    }
+    // operador de corchetes.
+    //MpiStream operator[](int targetProcess) {
+    //    return MpiStream(targetProcess, *this);
+    //}
 
     inline int getProcessNumber() const {
         return process_number;
