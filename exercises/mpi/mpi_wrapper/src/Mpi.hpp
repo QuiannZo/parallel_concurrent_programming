@@ -1,11 +1,16 @@
 #ifndef MPI_HPP
 #define MPI_HPP
 
+#include <sstream>
 #include <mpi.h>
 #include <stdexcept>
 #include <iostream>
 #include <string>
 #include <vector>
+
+#include "MpiStream.hpp"
+
+class MpiStream;
 
 class Mpi {
 public:
@@ -37,6 +42,11 @@ public:
     // Destructor.
     ~Mpi() {
         MPI_Finalize();
+    }
+
+    // operador de corchetes
+    MpiStream operator[](int targetProcess) {
+        return MpiStream(targetProcess, *this);
     }
 
     inline int getProcessNumber() const {
@@ -148,5 +158,6 @@ private:
         return map(Type());
     }
 };
+
 
 #endif // MPI_HPP
