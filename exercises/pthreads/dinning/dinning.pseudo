@@ -1,0 +1,26 @@
+procedure main(argc, argv[]):
+  shared chopsticks[] := create_semaphores(5, 1)
+
+  for id := 0 to 4 do
+    create_thread(philosopher, id)
+  end for
+end procedure
+
+procedure philosopher(id):
+  while true do
+    think()
+    get_chopsticks(id)
+    eat()
+    put_chopsticks(id)
+  end while
+end procedure
+
+procedure get_chopsticks(id):
+  wait(chopsticks[id])
+  wait(chopsticks[(id + 1) mod 5])
+end procedure
+
+procedure put_chopsticks(id):
+  signal(chopsticks[id])
+  signal(chopsticks[(id + 1) mod 5])
+end procedure
