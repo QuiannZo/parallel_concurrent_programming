@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <time.h>
 #include <unistd.h>
+#include <omp.h>
 
 #include "password_crack.h"
 #include "common.h"
@@ -69,56 +70,34 @@ int open_file(char* dir, char* pass){
     return res;
 }
 
-void static_mapping(int *min, int *max, int thread_num, unsigned long long workload){
-    // total threads.
-    uint64_t thread_count = 12;
-    *min = (thread_num * (workload / thread_count)) + min_val(thread_num, (workload % thread_count));
-    *max = ((thread_num + 1) * (workload / thread_count)) + min_val(thread_num, (workload % thread_count));
-}
-
 // The find_password function modified to allow threads to access it.
-void* find_password_parallel(void* data){
-    thread_args* thread_data = (thread_args*)data;
-    char* chars = thread_data->chars;
+void find_password_parallel(char* chars, int max_length, char* dir) {
     int char_set_length = strlen(chars);
-    int max_length = thread_data->max_length;
-    char* dir = thread_data->dir;
-    int thread_id = thread_data->thread_id;
-    int num_threads = thread_data->num_threads;
 
-    // Password search by brute force.
-    // length of the password.
-    for (int length = 1; length <= maxLen; ++length) {
-
-        // Mapeo estatico...
-        int min_len, max_len = 0;
-        unsigned long long workload = calculate_total_combinations(strlen(chars), length);
-        static_mapping(&min_len, &max_len, thread_id, workload);
-
-        // calculate thread total combinations.
-        int x = 0;
-        for (int i = min_len; i < max_len; ++i) {
+    //#pragma omp parallel for schedule(dynamic) private(char_set_length)
+    for (int length = 1; length <= max_length; ++length) {
+        for (int i = 0; i < calculate_total_combinations(char_set_length, length); ++i) {
             int num = i;
             char password[length + 1];
-            
+
             // cambio de base.
             for (int j = 0; j < length; ++j) {
                 int index = num % char_set_length;
                 password[j] = chars[index];
                 num /= char_set_length;
             }
-            
+
             password[length] = '\0';
+            
+            // Make sure you pass the correct arguments to open_file
             int of = open_file(dir, password);
             if (of == 0) {
-                strcat(dir, " ");
-                strcat(dir, password);
-
-                // Break the cycle if found.
-                break;
+                //#pragma omp critical
+                //{
+                    strcat(dir, " ");
+                    strcat(dir, password);
+                //}
             }
         }
     }
-    
-    pthread_exit(NULL);
 }

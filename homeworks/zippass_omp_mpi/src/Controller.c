@@ -108,31 +108,11 @@ void run(int argc, char* argv[]){
 
     // // test passwords.
 
-    // thread number in the machine.
-    uint64_t thread_count = 12;
-
-    // create the arr of threads and their data structs.
-    pthread_t threads[thread_count];
-    thread_args thread_args[thread_count];
-
     // Cycle through all possible files.
     int k = 0;
     while(k < paths_size && paths[k][0] != '\0'){
-        for (int i = 0; i < thread_count; ++i) {
-
-            // Assign the arguments.
-            thread_args[i].chars = chars;
-            thread_args[i].max_length = maxLen;
-            thread_args[i].dir = paths[k];
-            thread_args[i].thread_id = i;
-            thread_args[i].num_threads = thread_count;
-
-            pthread_create(&threads[i], NULL, find_password_parallel, (void*)&thread_args[i]);
-        }
-        
-        for (int i = 0; i < thread_count; ++i) {
-            pthread_join(threads[i], NULL);
-        }
+        // For each file apply thr function find_password_parallel.
+        find_password_parallel(chars, maxLen, paths[k]);
         k++;
     }
 
