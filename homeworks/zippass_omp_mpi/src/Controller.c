@@ -107,7 +107,6 @@ void run(int argc, char* argv[]){
     read_data(argc, argv);
 
     // // test passwords.
-
     // Cycle through all possible files.
     int k = 0;
     while(k < paths_size && paths[k][0] != '\0'){
