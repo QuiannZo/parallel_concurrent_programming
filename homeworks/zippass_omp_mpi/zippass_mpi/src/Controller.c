@@ -104,29 +104,35 @@ void print_data(){
 }
 
 // Function to process files on parallel.
-void process_files_parallel(Queue* fileQueue) {
-    int rank, size;
+void process_files_parallel(Queue* fileQueue, int rank, int size) {
+    printf("Rank received on the function: %d\n", rank);
     char filename[256];
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-
-    // Cada proceso MPI procesa un archivo a la vez.
+    // Cada proceso MPI procesa un archivo a la vez. Verifica que hayan files en el queue. SI hay,
+    // envia un directorio a cada proceso mientras sigan habiendo files. Si se acaban en este proceso,
+    // el condicional hace que el for no haga nada y continua a hacer lo que si puede.
     while (!is_queue_empty(fileQueue)) {
-        // Desencola un archivo para procesar
-        char* filepath = dequeue(fileQueue);
-
-        // El proceso 0 (maestro) envía el archivo a los otros procesos
+        // El proceso 0 (maestro) desencola y envía el archivo a los otros procesos.
         if (rank == 0) {
             for (int dest = 1; dest < size; dest++) {
-                MPI_Send(filepath, 256, MPI_CHAR, dest, 0, MPI_COMM_WORLD);
+                if(!is_queue_empty(fileQueue)){
+                    char* filepath = dequeue(fileQueue);
+                    printf("Dequeued from rank %d\n", rank);
+                    // Send the file path to all slave processes
+                    MPI_Send(filepath, 256, MPI_CHAR, dest, 0, MPI_COMM_WORLD);
+                    printf("Sent %s from rank 0 to rank %d\n",filepath ,dest);
+                }
             }
         } else {
             // Los procesos esclavos reciben el nombre del archivo.
             MPI_Recv(filename, 256, MPI_CHAR, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            printf("Received message %s for %d\n", filename, rank);
 
             // Cada proceso hace su trabajo.
+            printf("Entering func.\n");
             find_password_parallel(chars, maxLen, filename);
+
+            MPI_Barrier(MPI_COMM_WORLD);
         }
     }
 }
@@ -136,11 +142,12 @@ void run(int argc, char* argv[]){
     init();
 
     // // test passwords. Using MPI.
-    int rank, size;
-
     MPI_Init(&argc, &argv);
+
+    int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
+    printf("Rank: %d, Size: %d\n", rank, size);
 
     Queue fileQueue;
     initialize_queue(&fileQueue);
@@ -151,11 +158,12 @@ void run(int argc, char* argv[]){
         // El proceso 0 llena la cola con los nombres de los archivos.
         for (int k = 0; k < paths_size && paths[k][0] != '\0'; k++) {
             enqueue(&fileQueue, paths[k]);
+            printf("Enqued\n");
         }
     }
 
     // Every process works on its file.
-    process_files_parallel(&fileQueue);
+    process_files_parallel(&fileQueue, rank, size);
 
     // Finalize.
     MPI_Finalize();
