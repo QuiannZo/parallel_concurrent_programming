@@ -135,17 +135,19 @@ void run(int argc, char* argv[]){
     //Init vars.
     init();
 
-    // run func.
-    read_data();
-
     // // test passwords. Using MPI.
+    int rank, size;
+
     MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     Queue fileQueue;
     initialize_queue(&fileQueue);
 
-    int rank = 0;
     if (rank == 0) {
+        // read func.
+        read_data();
         // El proceso 0 llena la cola con los nombres de los archivos.
         for (int k = 0; k < paths_size && paths[k][0] != '\0'; k++) {
             enqueue(&fileQueue, paths[k]);
