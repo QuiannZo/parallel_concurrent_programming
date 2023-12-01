@@ -1,8 +1,8 @@
 # Makefile v3.0.0 2022-Dec-25 Jeisson Hidalgo-Cespedes ECCI-UCR CC-BY 4.0
 
 # Compiler and tool flags
-CC=gcc
-XC=g++
+CC=mpicc
+XC=mpic++
 JC=javac
 DEFS=
 CSTD=-std=c17

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "queue.h"
+
 /**
  * @file Controller.h
  * @brief Header file.
@@ -44,3 +46,6 @@ void print_data();
  * @param argv Array of arguments.
  */
 void run(int argc, char* argv[]);
+
+// Function to process files on parallel.
+void process_files_parallel(Queue* fileQueue);
