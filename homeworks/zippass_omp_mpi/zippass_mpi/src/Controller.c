@@ -111,7 +111,7 @@ void process_files_parallel(Queue* fileQueue, int rank, int size) {
     // Cada proceso MPI procesa un archivo a la vez. Verifica que hayan files en el queue. SI hay,
     // envia un directorio a cada proceso mientras sigan habiendo files. Si se acaban en este proceso,
     // el condicional hace que el for no haga nada y continua a hacer lo que si puede.
-    while (!is_queue_empty(fileQueue)) {
+    //while (!is_queue_empty(fileQueue)) {
         // El proceso 0 (maestro) desencola y envía el archivo a los otros procesos.
         if (rank == 0) {
             for (int dest = 1; dest < size; dest++) {
@@ -134,7 +134,7 @@ void process_files_parallel(Queue* fileQueue, int rank, int size) {
 
             MPI_Barrier(MPI_COMM_WORLD);
         }
-    }
+    //}
 }
 
 void run(int argc, char* argv[]){
