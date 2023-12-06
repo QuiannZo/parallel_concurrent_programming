@@ -49,3 +49,5 @@ void run(int argc, char* argv[]);
 
 // Function to process files on parallel.
 void process_files_parallel(Queue* fileQueue);
+
+void copy_data(int maxlen, char* charset);

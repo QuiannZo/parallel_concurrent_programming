@@ -17,6 +17,12 @@
 
 #define QUEUE_SIZE 100
 
+struct FileData {
+    char filepath[256];
+    int maxLen;
+    char chars[100];
+};
+
 void init(){
     // Allocate memory for chars.
     chars = (char*)malloc(chars_size * sizeof(char));
@@ -105,36 +111,31 @@ void print_data(){
 
 // Function to process files on parallel.
 void process_files_parallel(Queue* fileQueue, int rank, int size) {
-    printf("Rank received on the function: %d\n", rank);
-    char filename[256];
+    struct FileData fileData;
 
     // Cada proceso MPI procesa un archivo a la vez. Verifica que hayan files en el queue. SI hay,
     // envia un directorio a cada proceso mientras sigan habiendo files. Si se acaban en este proceso,
     // el condicional hace que el for no haga nada y continua a hacer lo que si puede.
-    //while (!is_queue_empty(fileQueue)) {
-        // El proceso 0 (maestro) desencola y envía el archivo a los otros procesos.
-        if (rank == 0) {
-            for (int dest = 1; dest < size; dest++) {
-                if(!is_queue_empty(fileQueue)){
-                    char* filepath = dequeue(fileQueue);
-                    printf("Dequeued from rank %d\n", rank);
-                    // Send the file path to all slave processes
-                    MPI_Send(filepath, 256, MPI_CHAR, dest, 0, MPI_COMM_WORLD);
-                    printf("Sent %s from rank 0 to rank %d\n",filepath ,dest);
-                }
+    // El proceso 0 (maestro) desencola y envía el archivo a los otros procesos.
+    if (rank == 0) {
+        for (int dest = 1; dest < size; dest++) {
+            if (!is_queue_empty(fileQueue)) {
+                // Populate the FileData structure
+                char* filepath = dequeue(fileQueue);
+                strcpy(fileData.filepath, filepath);
+                fileData.maxLen = maxLen;
+                strcpy(fileData.chars, chars);
+                // Send the FileData structure to all slave processes
+                MPI_Send(&fileData, sizeof(struct FileData), MPI_BYTE, dest, 0, MPI_COMM_WORLD);
             }
-        } else {
-            // Los procesos esclavos reciben el nombre del archivo.
-            MPI_Recv(filename, 256, MPI_CHAR, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            printf("Received message %s for %d\n", filename, rank);
-
-            // Cada proceso hace su trabajo.
-            printf("Entering func.\n");
-            find_password_parallel(chars, maxLen, filename);
-
-            MPI_Barrier(MPI_COMM_WORLD);
         }
-    //}
+    } else {
+        // Los procesos esclavos reciben la estructura FileData.
+        MPI_Recv(&fileData, sizeof(struct FileData), MPI_BYTE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+        // Cada proceso hace su trabajo.
+        find_password_parallel(fileData.chars, fileData.maxLen, fileData.filepath);
+    }
 }
 
 void run(int argc, char* argv[]){
@@ -147,7 +148,6 @@ void run(int argc, char* argv[]){
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
-    printf("Rank: %d, Size: %d\n", rank, size);
 
     Queue fileQueue;
     initialize_queue(&fileQueue);
@@ -155,21 +155,30 @@ void run(int argc, char* argv[]){
     if (rank == 0) {
         // read func.
         read_data();
+
         // El proceso 0 llena la cola con los nombres de los archivos.
         for (int k = 0; k < paths_size && paths[k][0] != '\0'; k++) {
             enqueue(&fileQueue, paths[k]);
-            printf("Enqued\n");
         }
+
+        // Broadcast data to all processes
+        MPI_Bcast(chars, chars_size, MPI_CHAR, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&maxLen, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+        for (int i = 0; i < paths_size; i++) {
+            MPI_Bcast(paths[i], 256, MPI_CHAR, 0, MPI_COMM_WORLD);
+        }
+
     }
+
+    // Synchronize all processes before moving forward
+    MPI_Barrier(MPI_COMM_WORLD);
 
     // Every process works on its file.
     process_files_parallel(&fileQueue, rank, size);
 
     // Finalize.
     MPI_Finalize();
-
-    // print the data to the output.
-    print_data();
     
     // Free memory.
     free_memo();

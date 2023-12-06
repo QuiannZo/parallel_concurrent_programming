@@ -20,7 +20,6 @@ char *chars = NULL; // chars by the input.
 char **paths = NULL; // paths of the zip files.
 
 int open_file(char* dir, char* pass){
-    printf("Of entered.\n");
     int res = 0;
     const char* password = pass;
     const char* directory = dir;
@@ -73,15 +72,14 @@ int open_file(char* dir, char* pass){
 
 // The find_password function modified to allow threads to access it.
 void find_password_parallel(char* chars, int max_length, char* dir) {
+    char temp[256];
+    strcat(temp, dir);
     int char_set_length = strlen(chars);
-    printf("Function entered.\n");
-
     for (int length = 1; length <= max_length; ++length) {
         // Calculate the total combinations outside the loop to avoid race conditions
         int total_combinations = calculate_total_combinations(char_set_length, length);
-        printf("Loop entered.\n");
 
-        #pragma omp parallel for schedule(dynamic) shared(chars, max_length, dir, char_set_length)
+        //#pragma omp parallel for schedule(dynamic) shared(chars, max_length, dir, char_set_length)
         for (int i = 0; i < total_combinations; ++i) {
             int num = i;
             char password[length + 1];
@@ -94,18 +92,18 @@ void find_password_parallel(char* chars, int max_length, char* dir) {
             }
 
             password[length] = '\0';
-            printf("Password: %s.\n", password);
 
             // Make sure you pass the correct arguments to open_file
             int of = open_file(dir, password);
 
-            #pragma omp critical
+            //#pragma omp critical
             {
                 if (of == 0) {
-                    strcat(dir, " ");
-                    strcat(dir, password);
+                    strcat(temp, " ");
+                    strcat(temp, password);
                 }
             }
         }
     }
+    printf("%s\n", temp);
 }
