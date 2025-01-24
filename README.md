@@ -2,48 +2,48 @@
 
 ## Glossary
 
-- Programación serial: El programa corre en un solo hilo de un proceso. ESto significa que el programa se ejecuta de forma serial como lo indica su nombre.
+- Serial programming: The program runs in a single thread of a process. This means that the program is executed serially as the name implies.
 
-- Programación concurrente: Se tienen varias tareas ejecutandose que no necesariamente corren a la vez. Una tarea puede progresar independientemente de las demas. Se ejecuta x programa de forma concurrente, y la memoria puede ser compartida en el proceso padre.
+- Concurrent programming: You have several tasks running that do not necessarily run at the same time. A task can progress independently of the others. It executes x program concurrently, and memory can be shared in the parent process.
 
-- Programación paralela: Se ejecuta a la vez. Se identifican partes de un proceso que se pueden desarrollar de forma independiente, para asi lograr un paralelismo. OMP permite marcar las regiones donde se puede hacer esto.
+- Parallel programming: Runs concurrently. Parts of a process that can run independently are identified, in order to achieve parallelism. OMP allows marking the regions where this can be done.
 
-- Concurrencia de tareas: Se refiere a la ejecución simultanea de varias tareas independientes.
+- Task concurrency: Refers to the simultaneous execution of several independent tasks.
 
-- Paralelismo de datos: Se dividen los datos y se procesan paralelamente. Esto implica separar las unidades de trabajo y hacer un mapeo.
+- Data parallelism: Data is divided and processed in parallel. This involves separating units of work and mapping.
 
-- Hilo de ejecución: Unidad de ejecucion dependiente de un proceso. Un programa puede tener multiples hilos de ejecucion realizando cada uno tareas de manera concurrente.
+- Thread: Unit of execution dependent on a process. A program can have multiple threads of execution, each performing tasks concurrently.
 
-- Indeterminismo: Se refiere a la imposibilidad de predecir el orden exacto de ejecución de las tareas en un programa concurrente. Esto es natural, sin embargo, puede "evitarse" usando barreras.
+- Indeterminism: Refers to the impossibility of predicting the exact order of execution of tasks in a concurrent program. This is natural, however, it can be “avoided” by using barriers.
 
-- Memoria privada y compartida: La memoria compartida es aquella que todos los hilos de un programa comparten. La privada es la memoria de cada hilo, con sus parametros, o cual sea el dato que quiera guardarse.
+- Private and shared memory: Shared memory is the memory that all threads of a program share. Private memory is the memory of each thread, with its parameters, or whatever data it wants to store.
 
-- Espera activa: Consiste en que un hilo esté esperando activamente a que ocurra un algo sin utilizar recursos. Esto obviamente es negativo ya que desperdicia recursos.
+- Active waiting: Consists of a thread actively waiting for something to happen without using resources. This is obviously negative since it wastes resources.
 
-- Condición de carrera: El resultado de la ejecución de un programa depende del orden de ejecución de las instrucciones, y este orden no está determinado de alguna manera por el programador. Esto causa errores.
+- Race condition: The result of the execution of a program depends on the execution order of the instructions, and this order is not somehow determined by the programmer. This causes errors.
 
-- Control de concurrencia: Se refiere a las tecnicas y mecanismos utilizados para garantizar que las operaciones concurrentes no se interfieran entre ellas.
+- Concurrency control: Refers to the techniques and mechanisms used to ensure that concurrent operations do not interfere with each other.
 
-- Seguridad condicional: Se puede usar en paralelismo de datos. Hace que los hilos puedan accesar datos sin generar condiciones de carrera.
+- Conditional safety: Can be used in data parallelism. It allows threads to access data without generating race conditions.
 
-- Exclusión mutua: Dos hilos o mas no pueden ejecutar simultaneamente secciones criticas del codigo.
+- Mutual exclusion: Two or more threads cannot execute critical sections of code simultaneously.
 
-- Semáforo: Un semáforo es una variable de sincronización que se usa para controlar el acceso a recursos compartidos por los hilos.
+- Semaphore: A semaphore is a synchronization variable used to control access to resources shared by threads.
 
-- Barrera: Un mecanismo de sincronización que permite a varios hilos esperar hasta que todos hayan alcanzado un punto específico de ejecución antes de continuar con el proceso. Cuando llega a x cantidad, "deja pasar" a los hilos.
+- Barrier: A synchronization mechanism that allows multiple threads to wait until all threads have reached a specific point of execution before continuing with the process. When it reaches x amount, it “lets threads through”.
 
-- Variable de condición: Es una variable que se usa para sincronizar hilos. Signal deja pasar un hilo, broadcast a todos.
+- Condition variable: A variable used to synchronize threads. Signal lets one thread through, broadcast to all.
 
-- Candado de lectura y escritura: Mecanismo que permite a varios hilos leer simultáneamente una sección critica pero donde solo un hilo puede escribir en la sección a la vez.
+- Read-write lock: A mechanism that allows multiple threads to simultaneously read a critical section but where only one thread can write to the section at a time.
 
-- Descomposición: Dividir un problema grande en partes más pequeñas que pueden ser resueltas concurrentemente. Esta relacionado directamente al mapeo.
+- Decomposition: Breaking a large problem into smaller parts that can be solved concurrently. It is directly related to mapping.
 
-- Mapeo: El mapeo consiste en dividir una carga de trabajo para que esta pueda ser trabajada de forma concurrente. Hay varios tipos de mapeo que conviene usar segun sea util en x caso.
+- Mapping: Mapping consists of dividing a workload so that it can be worked concurrently. There are several types of mapping that should be used depending on the usefulness in each case.
 
-- Incremento de velocidad: La mejora en el rendimiento de un programa lograda mediante la programación paralela o concurrente.
+- Speed increase: The improvement in the performance of a program achieved through parallel or concurrent programming.
 
-- Comunicación punto a punto entre procesos: Transferencia directa de datos entre dos procesos concurrentes.
+- Point-to-point inter-process communication: Direct data transfer between two concurrent processes.
 
-- Comunicación colectiva entre procesos: Transferencia de datos entre varios procesos.
+- Collective inter-process communication: Transfer of data between multiple processes.
 
-- Reducción: Un proceso en el que múltiples resultados parciales se combinan para producir un resultado final. Al final se debe hacer alguna operacion para "unir" los datos.
+- Reduction: A process in which multiple partial results are combined to produce a final result. Some operation must be performed at the end to “join” the data.
