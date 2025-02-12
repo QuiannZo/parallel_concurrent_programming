@@ -1,4 +1,4 @@
-# concurrente23b-quiann_zolfaghari
+# Parallel and concurrent programming - quiann_zolfaghari
 
 ## Glossary
 
